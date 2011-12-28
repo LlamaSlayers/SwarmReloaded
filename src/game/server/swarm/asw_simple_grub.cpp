@@ -344,6 +344,6 @@ void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 		pMarine->GetMarineResource()->m_iGrubKills++;
 		m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
 	}
-	m_OnKilled.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
+	m_OnDeath.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
 	BaseClass::Event_Killed(info);
 }
