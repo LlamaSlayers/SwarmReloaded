@@ -3,7 +3,8 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="MissionChooser"
-	ProjectGUID="{A26C0361-6B09-9E3D-5194-C9CB89243710}"
+	ProjectGUID="{0023FDF4-5EAD-4261-B41A-65DC17348D30}"
+	RootNamespace="MissionChooser"
 	>
 	<Platforms>
 		<Platform
@@ -22,7 +23,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="if EXIST &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
+				CommandLine="if EXIST &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot; for /f &quot;delims=&quot; %%A in (&apos;attrib &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot;&apos;) do set valveTmpIsReadOnly=&quot;%%A&quot;&#x0D;&#x0A;set valveTmpIsReadOnlyLetter=%valveTmpIsReadOnly:~6,1%&#x0D;&#x0A;if &quot;%valveTmpIsReadOnlyLetter%&quot;==&quot;R&quot; del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;if exist ..\..\devtools\bin\vpccrccheck.exe ..\..\devtools\bin\vpccrccheck.exe -crc2 test_swarm.vcproj&#x0D;&#x0A;if ERRORLEVEL 1 exit 1&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool
@@ -124,8 +125,8 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Publishing to J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\."
-				CommandLine="if exist &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;J:\Program Files\Steam\SteamApps\sourcemods\swarmreloaded\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
+				Description="Publishing to SteamApps\sourcemods\swarmreloaded\bin\."
+				CommandLine="if exist &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.&quot; goto ValveStart&#x0D;&#x0A;mkdir &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.&quot;&#x0D;&#x0A;:ValveStart&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetFileName) &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.\$(TargetFileName)&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;if exist &quot;$(TargetDir)&quot;$(TargetName).map copy &quot;$(TargetDir)&quot;$(TargetName).map &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.\$(TargetName).map&quot;&#x0D;&#x0A;copy &quot;$(TargetDir)&quot;$(TargetName).pdb &quot;%VCONTENT%\..\sourcemods\swarmreloaded\bin\.\$(TargetName).pdb&quot;&#x0D;&#x0A;if ERRORLEVEL 1 goto BuildEventFailed&#x0D;&#x0A;goto BuildEventOK&#x0D;&#x0A;:BuildEventFailed&#x0D;&#x0A;echo *** ERROR! PostBuildStep FAILED for $(ProjectName)! EXE or DLL is probably running. ***&#x0D;&#x0A;del /q &quot;$(TargetDir)&quot;$(TargetFileName)&#x0D;&#x0A;exit 1&#x0D;&#x0A;:BuildEventOK&#x0D;&#x0A;"
 				ExcludedFromBuild="false"
 			/>
 		</Configuration>
@@ -918,4 +919,6 @@
 			</File>
 		</Filter>
 	</Files>
+	<Globals>
+	</Globals>
 </VisualStudioProject>
