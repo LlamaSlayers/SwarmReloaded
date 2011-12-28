@@ -318,12 +318,34 @@ bool VMFExporter::AddRoomTemplateEntities( const CRoomTemplate *pRoomTemplate )
 	{
 		if ( !Q_stricmp( pKeys->GetName(), "entity" ) )
 		{
-			if ( !ProcessEntity( pKeys ) )
+			if ( Q_stricmp( pKeys->GetString( "classname" ), "func_brush" )
+				&& Q_strnicmp( pKeys->GetString( "targetname" ), "structure_", 10 ) )
 			{
-				Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy entity from room %s\n", pRoomTemplate->GetFullName());
-				return false;
+				for ( KeyValues *pSubKey = pKeys->GetFirstSubKey(); pSubKey; )
+				{
+					if ( pSubKey->GetFirstSubKey() )
+					{
+						if ( !Q_stricmp( pSubKey->GetName(), "solid" ) )
+						{
+							if ( !ProcessSolid( pSubKey ) )
+							{
+								Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy structure_* from room %s\n", pRoomTemplate->GetFullName());
+								return false;
+							}
+							m_pExportWorldKeys->AddSubKey( pSubKey->MakeCopy() );
+						}
+					}
+				}
 			}
-			m_pExportKeys->AddSubKey( pKeys->MakeCopy() );
+			else
+			{
+				if ( !ProcessEntity( pKeys ) )
+				{
+					Q_snprintf( m_szLastExporterError, sizeof(m_szLastExporterError), "Failed to copy entity from room %s\n", pRoomTemplate->GetFullName());
+					return false;
+				}
+				m_pExportKeys->AddSubKey( pKeys->MakeCopy() );
+			}
 		}
 	}
 	
@@ -538,7 +560,7 @@ bool VMFExporter::ProcessSideKey( KeyValues *pKey )
 }
 
 bool VMFExporter::ProcessEntity( KeyValues *pEntityKeys )
-{		
+{
 	for ( KeyValues *pKeys = pEntityKeys->GetFirstSubKey(); pKeys; )
 	{
 		if ( pKeys->GetFirstSubKey() )
