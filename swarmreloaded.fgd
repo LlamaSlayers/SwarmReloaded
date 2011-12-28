@@ -4121,13 +4121,22 @@
 	NumGoo(integer) : "Num Goo" : 1 : "How many Alien Goo entities have to be destroyed for this objective to be complete."
 ]
 
-
 @PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_triggered.vmt") = asw_objective_triggered : 
 	"Alien Swarm Mission Objective"
 [
     objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
 	input SetComplete(void) : "SetComplete"
 	input SetIncomplete(void) : "SetIncomplete"
+	input SetFailed(void) : "SetFailed"
+]
+
+@PointClass base(Targetname, ASWObjective) iconsprite("editor/asw_objective_triggered.vmt") = asw_objective_counter : 
+	"Alien Swarm Mission Objective"
+[
+    objectivetitle(string) : "Objective Title" : "" : "Title to use for this objective in the list on the briefing screen, or in-game for the current objective HUD display."
+	NumRequired(integer) : "Goal count" : 1 : "The required number of actions for this objective."
+	input SetComplete(void) : "Add"
+	input Subtract(void) : "Subtract"
 	input SetFailed(void) : "SetFailed"
 ]
 
@@ -4255,12 +4264,12 @@
 	output OnMessageRead(void) : "Fired when any player closes this message window"
 ]
 
-@PointClass base(BaseDriveableVehicle) studioprop() = asw_vehicle_jeep :
-	"Driveable studiomodel jeep."
-[
+//@PointClass base(BaseDriveableVehicle) studioprop() = asw_vehicle_jeep :
+	//"Driveable studiomodel jeep."
+//[
 	//input StartRemoveTauCannon(void) : "Start the tau removal sequence."
 	//input FinishRemoveTauCannon(void) : "Finish the tau removal sequence."
-]
+//]
 
 //@PointClass base(Targetname, Parentname, Angles, Global, Studiomodel, Origin) studioprop("models/buggy.mdl") = asw_dummy_vehicle
 //[
@@ -4340,6 +4349,21 @@
 ]
 
 @PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun
+[
+	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/cannon_top.mdl") = asw_sentry_top_cannon
+[
+	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/icer_top.mdl") = asw_sentry_top_icer
+[
+	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+]
+
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/flamer_top.mdl") = asw_sentry_top_flamer
 [
 	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
 ]
@@ -4424,23 +4448,15 @@
 	output OnTrigger(void) : "Fired whenever the trigger is activated."
 ]
 
-
-
-@PointClass base(Targetname,Angles) size(-8 -8 -8, 8 8 8) = asw_menu_flashlight : 
-	"A flashlight for the main menu that will aim in the direction of the mouse cursor.  Not to be used for normal levels!" 
-[
-	
-]
-
-@SolidClass base(Targetname, Origin) = asw_camera_control :
-	"The camera will change when marines are inside this volume."
-[
-	angtype(choices) : "Angle Type" : 0 : "Camera angle to use when marines are in this volume." =
-	[
-		0 : "Top-down"
-		1 : "40 degree"
-	]
-]
+//@SolidClass base(Targetname, Origin) = asw_camera_control :
+	//"The camera will change when marines are inside this volume."
+//[
+	//angtype(choices) : "Angle Type" : 0 : "Camera angle to use when marines are in this volume." =
+	//[
+		//0 : "Top-down"
+		//1 : "40 degree"
+	//]
+//]
 
 @SolidClass base(Targetname) = asw_snow_volume :
 	"Causes snow when the marine is inside this volume."
@@ -4528,15 +4544,15 @@
 	]
 ]
 
-@PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_intro_control : 
-	"Alien Swarm Intro Control"
-[
-	input LaunchCampaignMap(void) : "Shows the campaign map so the player can choose a mission to play."
-	input ShowCredits(void) : "Fades in ASI logo and credits"
-	input ShowCainMail(void) : "Shows the Lt. Cain mail for the outro"
-	input CheckReconnect(void) : "Call this when the outro has ended to make clients check for reconnecting to the dedicated server they were playing on."
-	output IntroStarted(void) : "Fired when the intro/outro map begins."
-]
+//@PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_intro_control : 
+	//"Alien Swarm Intro Control"
+//[
+	//input LaunchCampaignMap(void) : "Shows the campaign map so the player can choose a mission to play."
+	//input ShowCredits(void) : "Fades in ASI logo and credits"
+	//input ShowCainMail(void) : "Shows the Lt. Cain mail for the outro"
+	//input CheckReconnect(void) : "Call this when the outro has ended to make clients check for reconnecting to the dedicated server they were playing on."
+	//output IntroStarted(void) : "Fired when the intro/outro map begins."
+//]
 
 @PointClass base(Targetname) iconsprite("editor/info_target.vmt") = asw_info_heal : 
 	"Fires output when a marine is healed"
@@ -4575,36 +4591,36 @@
 	ragdollsequence(string) : "Ragdoll Sequence" : "" : "Ragdoll's pose will come from the first frame of this sequence.  Note: NOT WORKING CURRENTLY"
 ]
 
-@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/asw_queen_retreat_spot.vmt")  = asw_queen_retreat_spot :
-	"Queen retreats to this spot, facing in this direction, at certain injury levels, before summoning the next attack wave."
-[
+//@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/asw_queen_retreat_spot.vmt")  = asw_queen_retreat_spot :
+	//"Queen retreats to this spot, facing in this direction, at certain injury levels, before summoning the next attack wave."
+//[
 	
-]
+//]
 
-@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_tutorial_start :
-	"Indicates the starting point of the marines for the tutorial for each marine.  Multiple start points can be placed for each marine and the one matching the save stage the player has reached will be used." +
-	"Mapper should set the asw_tutorial_save_stage ConVar with triggers as the player progresses through the tutorial."
-[	
-	MarineSlot(choices) : "Marine Slot" : 0 : "Sets which marine this start point is intended for." =
-	[
-		0 : "Crash"
-		1 : "Sarge"
-		2 : "Bastille"
-	]
-	SaveStage(integer) : "Save stage" : 0 : "Sets which stage save this start point is intended for."
-]
+//@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_tutorial_start :
+	//"Indicates the starting point of the marines for the tutorial for each marine.  Multiple start points can be placed for each marine and the one matching the save stage the player has reached will be used." +
+	//"Mapper should set the asw_tutorial_save_stage ConVar with triggers as the player progresses through the tutorial."
+//[	
+	//MarineSlot(choices) : "Marine Slot" : 0 : "Sets which marine this start point is intended for." =
+	//[
+		//0 : "Crash"
+		//1 : "Sarge"
+		//2 : "Bastille"
+	//]
+	//SaveStage(integer) : "Save stage" : 0 : "Sets which stage save this start point is intended for."
+//]
 
-@PointClass base(Targetname, Parentname, Angles, EnableDisable) iconsprite("editor/asw_holoscan.vmt") = asw_holoscan : 
-	"Shows a red aiming scan arc, designed for use with the red hologram marines in the tutorial."
-[
-]
+//@PointClass base(Targetname, Parentname, Angles, EnableDisable) iconsprite("editor/asw_holoscan.vmt") = asw_holoscan : 
+	//"Shows a red aiming scan arc, designed for use with the red hologram marines in the tutorial."
+//[
+//]
 
-@PointClass base(Targetname, Parentname, Angles, EnableDisable) iconsprite("editor/asw_holoscan.vmt") = asw_holo_sentry : 
-	"Shows a red aiming scan arc, designed for use with the red hologram marines in the tutorial."
-[
+//@PointClass base(Targetname, Parentname, Angles, EnableDisable) iconsprite("editor/asw_holoscan.vmt") = asw_holo_sentry : 
+	//"Shows a red aiming scan arc, designed for use with the red hologram marines in the tutorial."
+//[
 	// Outputs
-	output OnSentryPlaced(void) : "When a sentry gun is placed and this entity is enabled this fires."
-]
+	//output OnSentryPlaced(void) : "When a sentry gun is placed and this entity is enabled this fires."
+//]
 
 // asw
 @PointClass sphere() iconsprite("editor/env_slomo.vmt") base(Targetname, Parentname) = env_slomo : 
@@ -4617,11 +4633,11 @@
 	input StopSlomo(void) : "Stop the slomo."
 ]
 
-@PointClass base(Angles) studio("models/swarmprops/Vehicles/BloodhoundMesh.mdl") sphere() = asw_bloodhound :
-	"Dropship used to deploy marines in Landing Bay mission."
-[
+//@PointClass base(Angles) studio("models/swarmprops/Vehicles/BloodhoundMesh.mdl") sphere() = asw_bloodhound :
+	//"Dropship used to deploy marines in Landing Bay mission."
+//[
 	
-]
+//]
 
 @PointClass base(Targetname,Angles,Parentname) studioprop("models/editor/camera.mdl") = asw_broadcast_camera : 
 	"A camera entity that controls all players views. While it's active, all players will see out of the camera." 
