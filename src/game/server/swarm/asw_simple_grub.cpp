@@ -16,6 +16,12 @@ PRECACHE_REGISTER( asw_grub );
 
 BEGIN_DATADESC( CASW_Simple_Grub )
 	DEFINE_ENTITYFUNC(GrubTouch),
+
+	DEFINE_OUTPUT( m_OnDamaged, "OnDamaged" ),
+	DEFINE_OUTPUT( m_OnDeath, "OnDeath" ),
+	DEFINE_OUTPUT( m_OnDamagedByPlayer, "OnDamagedByPlayer" ),
+	DEFINE_OUTPUT( m_OnIgnite, "OnIgnite" ),
+	DEFINE_OUTPUT( m_OnSquished, "OnSquished" ),
 END_DATADESC()
 
 extern ConVar asw_debug_simple_alien;
@@ -66,6 +72,7 @@ void CASW_Simple_Grub::GrubTouch( CBaseEntity *pOther )
 		{
 			CTakeDamageInfo dmg(pOther, pOther, Vector(0, 0, -1), GetAbsOrigin() + Vector(0, 0, 1), 20, DMG_CRUSH);
 			TakeDamage(dmg);
+			m_OnSquished.FireOutput( pOther, pOther, 0 );
 		}
 	}
 }
@@ -153,6 +160,8 @@ bool CASW_Simple_Grub::CorpseGib( const CTakeDamageInfo &info )
 	data.m_flScale = RemapVal( m_iHealth, 0, -500, 1, 3 );
 	data.m_flScale = clamp( data.m_flScale, 1, 3 );
 	data.m_fFlags = (IsOnFire() || (info.GetDamageType() & DMG_BURN)) ? ASW_GIBFLAG_ON_FIRE : 0;
+	if ( data.m_fFlags & ASW_GIBFLAG_ON_FIRE )
+		m_OnIgnite.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
 
 	CPASFilter filter( data.m_vOrigin );
 	filter.SetIgnorePredictionCull(true);
@@ -333,6 +342,8 @@ void CASW_Simple_Grub::Event_Killed( const CTakeDamageInfo &info )
 	if (pMarine && pMarine->GetMarineResource())
 	{
 		pMarine->GetMarineResource()->m_iGrubKills++;
+		m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
 	}
+	m_OnKilled.FireOutput( info.GetAttacker(), info.GetInflictor(), 0 );
 	BaseClass::Event_Killed(info);
 }

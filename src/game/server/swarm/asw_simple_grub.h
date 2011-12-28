@@ -48,6 +48,12 @@ public:
 	bool ShouldGib( const CTakeDamageInfo &info );
 	bool CorpseGib( const CTakeDamageInfo &info );
 	void Event_Killed( const CTakeDamageInfo &info );
+
+	COutputEvent m_OnDamaged;
+	COutputEvent m_OnDeath;
+	COutputEvent m_OnDamagedByPlayer;
+	COutputEvent m_OnIgnite;
+	COutputEvent m_OnSquished;
 };
 
 
