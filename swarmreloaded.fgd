@@ -4392,21 +4392,17 @@
 	input StopShake(void) : "Stop the shake."
 ]
 
-@NPCClass base(BaseNPC) studio("models/swarm/Grubs/Grub.mdl") sphere() = asw_grub :
+@NPCClass base(Targetname, Parentname) studio("models/swarm/Grubs/Grub.mdl") sphere() = asw_grub :
 	"A harmless Swarm grub, that crawls about looking icky."
 [
-	//sleepstate(choices) : "Sleep State" : 1 : "Holds the NPC in stasis until specified condition. See also 'Wake Radius' and 'Wake Squad'." =
-	//[
-//		0 : "None"
-		//1 : "Waiting for threat"
-		//2 : "Waiting for PVS"
-		//3 : "Waiting for input"
-	//]
-//	
-//	spawnflags(Flags) =
-//	[
-		//131072 : "Use Ground Checks" : 0
-	//]
+	output OnDamaged(void) : "Fired when this NPC takes damage."
+	output OnDeath(void) : "Fired when this NPC is killed."
+	output OnDamagedByPlayer(void) : "Fired when this NPC is hurt by a player."
+	output OnIgnite(void) : "Fired when this NPC is set on fire."
+	output OnSquished(void) : "Fired when this NPC is stepped upon or otherwise crushed."
+
+	// Inputs
+	input Ignite(void) : "Ignite, burst into flames"
 ]
 
 @SolidClass base(Trigger) = trigger_asw_jump :
