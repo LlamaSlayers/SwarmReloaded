@@ -1,0 +1,5 @@
+*.user
+*.suo
+*.ncb
+src/game/*/Debug_swarm
+src/game/*/Release_swarm
