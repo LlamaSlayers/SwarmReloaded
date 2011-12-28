@@ -3225,6 +3225,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\swarm\c_asw_objective_counter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\swarm\c_asw_objective_counter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\c_asw_objective_kill_aliens.cpp"
 					>
 				</File>

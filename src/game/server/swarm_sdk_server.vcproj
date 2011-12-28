@@ -4661,6 +4661,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\asw_objective_counter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\asw_objective_counter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_objective_dummy.cpp"
 					>
 				</File>
