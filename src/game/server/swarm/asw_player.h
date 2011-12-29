@@ -73,6 +73,7 @@ public:
 
 	bool ShouldAutoReload() { return m_bAutoReload; }
 	bool m_bAutoReload;
+	float m_fYaw;
 	
 	// anim state helper
 	virtual CBaseCombatWeapon* ASWAnim_GetActiveWeapon();

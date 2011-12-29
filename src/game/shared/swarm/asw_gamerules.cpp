@@ -13,7 +13,6 @@
 	#include "c_asw_campaign_save.h"
 	#include "c_asw_ammo.h"
 	#include "voice_status.h"
-	#include "asw_input.h"
 	#define CASW_Weapon C_ASW_Weapon
 	#define CAI_BaseNPC C_AI_BaseNPC
 	#define CASW_Flare_Projectile C_ASW_Flare_Projectile
@@ -86,7 +85,6 @@
 	#include "asw_buffgrenade_projectile.h"
 	#include "asw_achievements.h"
 	#include "asw_director.h"
-	#include "asw_camera_control.h"
 #endif
 #include "game_timescale_shared.h"
 #include "asw_gamerules.h"
@@ -6799,25 +6797,14 @@ int	CAlienSwarm::Damage_GetShouldNotBleed( void )
 }
 
 // movement uses this axis to decide where the marine should go from his forward/sidemove
-const QAngle& CAlienSwarm::GetTopDownMovementAxis( CASW_Marine *marine )
+const QAngle& CAlienSwarm::GetTopDownMovementAxis()
 {
 #ifdef CLIENT_DLL
 	static QAngle axis( 0, ASWInput()->ASW_GetCameraYaw(), 0 );
 	return axis;
 #else
 	static QAngle axis[ASW_NUM_MARINE_PROFILES];
-
-	string_t sasw_camera_control = AllocPooledString( "asw_camera_control" );
-	for ( CBaseEntity *pCamVol = gEntList.FindEntityByClassnameFast( NULL, sasw_camera_control ); pCamVol; pCamVol = gEntList.FindEntityByClassnameFast( pCamVol, sasw_camera_control ) )
-	{
-		if ( pCamVol->CollisionProp()->IsPointInBounds( marine->GetAbsOrigin() ) )
-		{
-			axis[marine->GetMarineResource()->GetProfileIndex()] = QAngle( 0, assert_cast<CASW_Camera_Control_Dummy *>( pCamVol )->m_fYaw, 0 );
-		}
-
-		return axis[marine->GetMarineResource()->GetProfileIndex()];
-	}
-	axis[marine->GetMarineResource()->GetProfileIndex()] = QAngle( 0, 90, 0 );
+	axis[marine->GetMarineResource()->GetProfileIndex()] = QAngle( 0, marine->GetCommander()->m_fYaw, 0 );
 	return axis[marine->GetMarineResource()->GetProfileIndex()];
 #endif
 }

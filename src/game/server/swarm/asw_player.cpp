@@ -1171,6 +1171,16 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				}
 				return true;
 			}
+			else if ( FStrEq( pcmd, "cl_aswcamerayaw" ) )
+			{
+				if ( args.ArgC() < 2 )
+				{
+					Warning("Player sent a bad cl_aswcamerayaw command\n");
+					return false;
+				}
+				m_fYaw = atof( args[1] );
+				return true;
+			}
 
 			break;
 		}
