@@ -4444,15 +4444,13 @@
 	output OnTrigger(void) : "Fired whenever the trigger is activated."
 ]
 
-//@SolidClass base(Targetname, Origin) = asw_camera_control :
-	//"The camera will change when marines are inside this volume."
-//[
-	//angtype(choices) : "Angle Type" : 0 : "Camera angle to use when marines are in this volume." =
-	//[
-		//0 : "Top-down"
-		//1 : "40 degree"
-	//]
-//]
+@SolidClass base(Targetname, Origin) = asw_camera_control :
+	"The camera will change when marines are inside this volume."
+[
+	pitch(float) : "Pitch" : 60
+	yaw(float) : "Yaw" : 90
+	distance(float) : "Distance" : 412
+]
 
 @SolidClass base(Targetname) = asw_snow_volume :
 	"Causes snow when the marine is inside this volume."
