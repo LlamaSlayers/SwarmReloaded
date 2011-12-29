@@ -105,6 +105,17 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	// Get the given pitch.
 	float flPitch = asw_cam_marine_pitch.GetFloat();
 
+	// Check to see if we are in a camera volume.
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		C_ASW_Camera_Volume *pCameraVolume = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
+		if ( pCameraVolume )
+		{
+			flPitch = pCameraVolume->m_fCameraPitch;
+		}
+	}
+
 	float fDeathCamInterp;
 	if ( pfDeathCamInterp )
 	{
@@ -118,17 +129,6 @@ float CASWInput::ASW_GetCameraPitch( const float *pfDeathCamInterp /*= NULL*/ )
 	if ( fDeathCamInterp > 0.0f )
 	{
 		flPitch = ( 1.0f - fDeathCamInterp ) * flPitch + fDeathCamInterp * asw_cam_marine_pitch_death.GetFloat();
-	}
-
-	// Check to see if we are in a camera volume.
-	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
-	if (pPlayer && pPlayer->GetMarine())
-	{
-		float fCameraVolumePitch = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
-		if ( fCameraVolumePitch != -1 )
-		{
-			flPitch = fCameraVolumePitch;
-		}
 	}
 
 	if ( m_fCurrentCameraPitch != flPitch )
@@ -165,6 +165,17 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		fRotate = AngleNormalize( fRotate );
 
 		return ( 1.0f - fDeathCamInterp ) * asw_cam_marine_yaw.GetFloat() + fDeathCamInterp * ( asw_cam_marine_yaw.GetFloat() + fRotate );
+	}
+
+	// Check to see if we are in a camera volume.
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		C_ASW_Camera_Volume *pCameraVolume = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
+		if ( pCameraVolume )
+		{
+			return pCameraVolume->m_fCameraYaw;
+		}
 	}
 
 	return asw_cam_marine_yaw.GetFloat();
@@ -247,6 +258,17 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 	if ( fDeathCamInterp > 0.0f )
 	{
 		return ( 1.0f - fDeathCamInterp ) * asw_cam_marine_dist.GetFloat() + fDeathCamInterp * asw_cam_marine_dist_death.GetFloat();
+	}
+
+	// Check to see if we are in a camera volume.
+	C_ASW_Player *pPlayer = C_ASW_Player::GetLocalASWPlayer();
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		C_ASW_Camera_Volume *pCameraVolume = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
+		if ( pCameraVolume )
+		{
+			return pCameraVolume->m_fCameraDistance;
+		}
 	}
 
 	return asw_cam_marine_dist.GetFloat();

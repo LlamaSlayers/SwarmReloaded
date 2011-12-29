@@ -9,7 +9,9 @@ CUtlVector<C_ASW_Camera_Volume*>	g_ASWCameraVolumes;
 C_ASW_Camera_Volume::C_ASW_Camera_Volume()
 {
 	g_ASWCameraVolumes.AddToTail(this);
-	m_fCameraPitch = 90;
+	m_fCameraPitch = 60;
+	m_fCameraYaw = 90;
+	m_fCameraDistance = 412;
 }
 
 C_ASW_Camera_Volume::~C_ASW_Camera_Volume()
@@ -133,17 +135,19 @@ bool C_ASW_Camera_Volume::KeyValue( const char *szKeyName, const char *szValue )
 		SetModelName( AllocPooledString( szValue ) );
 		return true;
 	}
-	if ( FStrEq( szKeyName, "angtype" ) )
+	if ( FStrEq( szKeyName, "pitch" ) )
 	{		
-		int iAngleType = atoi(szValue);
-		if (iAngleType == 0)	// 0 is top down
-		{
-			m_fCameraPitch = 90.0f;
-		}
-		else	// 1 is 40 degree
-		{
-			m_fCameraPitch = 40.0f;
-		}
+		m_fCameraPitch = atof( szValue );
+		return true;
+	}
+	if ( FStrEq( szKeyName, "yaw" ) )
+	{		
+		m_fCameraYaw = atof( szValue );
+		return true;
+	}
+	if ( FStrEq( szKeyName, "distance" ) )
+	{		
+		m_fCameraDistance = atof( szValue );
 		return true;
 	}
 	return BaseClass::KeyValue(szKeyName, szValue);

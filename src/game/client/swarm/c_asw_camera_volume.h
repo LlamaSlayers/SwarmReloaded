@@ -24,9 +24,11 @@ public:
 	static void RecreateAll(); // recreate all clientside camera volumes in map
 	static void DestroyAll();  // clear all clientside created camera volumes	
 	static C_ASW_Camera_Volume *CreateNew(bool bForce = false);
-	static float IsPointInCameraVolume(const Vector &src);	// is this point located within any of the camera volumes
+	static C_ASW_Camera_Volume *IsPointInCameraVolume(const Vector &src); // is this point located within any of the camera volumes
 
-	int m_fCameraPitch;
+	float m_fCameraPitch;
+	float m_fCameraYaw;
+	float m_fCameraDistance;
 
 protected:
 	static const char * ParseEntity( const char *pEntData );
