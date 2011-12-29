@@ -468,7 +468,7 @@ public:
 	CNetworkVar(int, m_iUnlockedModes);
 
 	virtual bool IsTopDown() { return true; }
-	virtual const QAngle& GetTopDownMovementAxis();
+	virtual const QAngle& GetTopDownMovementAxis( CASW_Marine *marine );
 
 	// special maps
 	bool IsTutorialMap() { return m_bIsTutorial; }

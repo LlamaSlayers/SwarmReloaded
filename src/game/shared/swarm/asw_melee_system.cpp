@@ -483,7 +483,7 @@ void CASW_Melee_System::OnJumpPressed( CASW_Marine *pMarine, CMoveData *pMoveDat
 	}
 	else
 	{
-		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + ASWGameRules()->GetTopDownMovementAxis()[YAW];	// assumes 45 degree cam!
+		pMarine->m_flMeleeYaw = RAD2DEG(atan2(-pMoveData->m_flSideMove, pMoveData->m_flForwardMove)) + ASWGameRules()->GetTopDownMovementAxis( pMarine )[YAW];	// assumes 45 degree cam!
 	}
 	pMarine->m_bFaceMeleeYaw = true;
 

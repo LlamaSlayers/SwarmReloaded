@@ -134,9 +134,6 @@ enum
 
 #define ASW_FLARE_AUTOAIM_DOT 0.4f
 
-// movement uses this axis to decide where the marine should go from his forward/sidemove
-#define ASW_MOVEMENT_AXIS QAngle(0,90,0)
-
 #define ASW_SCANNER_MAX_BLIPS 32
 
 #define ASW_MAX_EQUIP_SLOTS	3

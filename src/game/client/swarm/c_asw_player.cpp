@@ -1675,7 +1675,7 @@ void C_ASW_Player::AvoidMarines( CUserCmd *pCmd )
 
 	Vector currentdir;
 	Vector rightdir;
-	AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+	AngleVectors( QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), &currentdir, &rightdir, NULL );
 
 	Vector vDirection = vecSeparationVelocity;
 	VectorNormalize( vDirection );
@@ -1805,7 +1805,7 @@ void C_ASW_Player::MarineStopMoveIfBlocked(float flFrameTime, CUserCmd *pCmd, C_
 	vAngles.x = 0;
 
 	if ( asw_controls.GetInt() == 1 )
-		AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), &currentdir, &rightdir, NULL );
 	else
 		AngleVectors( vAngles, &currentdir, &rightdir, NULL );
 
@@ -2109,7 +2109,7 @@ void C_ASW_Player::MarinePerformClientSideObstacleAvoidance( float flFrameTime, 
 
 	if (asw_controls.GetBool())
 	{
-		AngleVectors( ASW_MOVEMENT_AXIS, &currentdir, &rightdir, NULL );
+		AngleVectors( QAngle( 0, ASWInput()->ASW_GetCameraYaw(), 0 ), &currentdir, &rightdir, NULL );
 	}
 	else
 	{
