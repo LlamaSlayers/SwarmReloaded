@@ -15,6 +15,7 @@
 ConVar asw_cam_marine_pitch( "asw_cam_marine_pitch", "60", FCVAR_CHEAT, "Marine Camera: pitch." );
 ConVar asw_cam_marine_pitch_rate( "asw_cam_marine_pitch_rate", "1000", FCVAR_CHEAT ); // asw setting
 ConVar asw_cam_marine_yaw( "asw_cam_marine_yaw", "90", FCVAR_CHEAT, "Marine Camera: yaw." );
+ConVar asw_cam_marine_yaw_rate( "asw_cam_marine_yaw_rate", "200", FCVAR_CHEAT );
 ConVar asw_cam_marine_dist( "asw_cam_marine_dist", "412", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
 ConVar asw_cam_marine_dist_rate( "asw_cam_marine_dist_rate", "50", FCVAR_CHEAT, "Marine Camera: Distance from marine." );
 
@@ -174,11 +175,15 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		C_ASW_Camera_Volume *pCameraVolume = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
 		if ( pCameraVolume )
 		{
-			return pCameraVolume->m_fCameraYaw;
+			m_fCurrentBlendCamYaw = ASW_ClampYaw( asw_cam_marine_yaw_rate.GetFloat(), m_fCurrentBlendCamYaw, pCameraVolume->m_fCameraYaw, MIN( 0.2f, gpGlobals->frametime ) );
+		}
+		else
+		{
+			m_fCurrentBlendCamYaw = ASW_ClampYaw( asw_cam_marine_yaw_rate.GetFloat(), m_fCurrentBlendCamYaw, asw_cam_marine_yaw.GetFloat(), MIN( 0.2f, gpGlobals->frametime ) );
 		}
 	}
 
-	return asw_cam_marine_yaw.GetFloat();
+	return m_fCurrentBlendCamYaw;
 }
 
 
@@ -267,11 +272,15 @@ float CASWInput::ASW_GetCameraDist( const float *pfDeathCamInterp /*= NULL*/ )
 		C_ASW_Camera_Volume *pCameraVolume = C_ASW_Camera_Volume::IsPointInCameraVolume( pPlayer->GetMarine()->GetAbsOrigin() );
 		if ( pCameraVolume )
 		{
-			return pCameraVolume->m_fCameraDistance;
+			m_fCurrentBlendCamDist = Lerp<float>( MIN( 0.2f, gpGlobals->frametime ), m_fCurrentBlendCamDist, pCameraVolume->m_fCameraDistance );
+		}
+		else
+		{
+			m_fCurrentBlendCamDist = Lerp<float>( MIN( 0.2f, gpGlobals->frametime ), m_fCurrentBlendCamDist, asw_cam_marine_dist.GetFloat() );
 		}
 	}
 
-	return asw_cam_marine_dist.GetFloat();
+	return m_fCurrentBlendCamDist;
 #endif
 }
 

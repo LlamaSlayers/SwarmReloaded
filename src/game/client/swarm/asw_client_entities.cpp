@@ -21,7 +21,7 @@ CASW_Client_Entities::CASW_Client_Entities()
 
 void CASW_Client_Entities::LevelInitPostEntity()
 {
-	//C_ASW_Camera_Volume::RecreateAll();
+	C_ASW_Camera_Volume::RecreateAll();
 	C_ASW_Snow_Volume::RecreateAll();
 	//C_Sprite::RecreateAll();
 	C_ASW_Scanner_Noise::RecreateAll();
@@ -29,7 +29,7 @@ void CASW_Client_Entities::LevelInitPostEntity()
 
 void CASW_Client_Entities::LevelShutdownPreEntity()
 {
-	//C_ASW_Camera_Volume::DestroyAll();	
+	C_ASW_Camera_Volume::DestroyAll();	
 	C_ASW_Snow_Volume::DestroyAll();	
 	//C_Sprite::DestroyAll();
 	C_ASW_Scanner_Noise::DestroyAll();

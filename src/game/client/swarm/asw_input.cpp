@@ -795,6 +795,8 @@ m_UseGlowObject( NULL, Vector( 0.4f, 0.7f, 0.9f ), 0.8f, true, true )
 	m_vecCrosshairAimingPos = vec3_origin;
 	m_vecCrosshairTracePos = vec3_origin;
 	m_bAutoAttacking = false;
+	m_fCurrentBlendCamDist = 412;
+	m_fCurrentBlendCamYaw = 90;
 
 	cl_entitylist->AddListenerEntity( this );
 
