@@ -5,3 +5,7 @@ src/game/*/Debug_swarm
 src/game/*/Release_swarm
 src/game/*/Debug
 src/game/*/Release
+*.bsp
+*.log
+*.prt
+*.vmx
