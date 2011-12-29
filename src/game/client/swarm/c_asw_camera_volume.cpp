@@ -57,15 +57,15 @@ bool C_ASW_Camera_Volume::Initialize()
 	return true;
 }
 
-float C_ASW_Camera_Volume::IsPointInCameraVolume(const Vector &src)
+C_ASW_Camera_Volume *C_ASW_Camera_Volume::IsPointInCameraVolume(const Vector &src)
 {
 	int c=g_ASWCameraVolumes.Count();
 	for (int i=0;i<c;i++)
 	{
 		if (g_ASWCameraVolumes[i]->CollisionProp()->IsPointInBounds(src))
-			return g_ASWCameraVolumes[i]->m_fCameraPitch;
+			return g_ASWCameraVolumes[i];
 	}
-	return -1;
+	return NULL;
 }
 
 void C_ASW_Camera_Volume::RecreateAll()
