@@ -16,6 +16,11 @@ public:
 	}
 };
 
+class CASW_Camera_Control_Dummy : public CServerOnlyEntity
+{
+	DECLARE_CLASS( CASW_Camera_Control_Dummy, CServerOnlyEntity );
+};
+
 class CASW_Scanner_Noise_Dummy : public CServerOnlyPointEntity
 {
 	DECLARE_CLASS( CASW_Scanner_Noise_Dummy, CServerOnlyPointEntity );
@@ -28,4 +33,5 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( asw_snow_volume, CASW_Snow_Volume_Dummy );
+LINK_ENTITY_TO_CLASS( asw_camera_control, CASW_Camera_Control_Dummy );
 LINK_ENTITY_TO_CLASS( asw_scanner_noise, CASW_Scanner_Noise_Dummy );
