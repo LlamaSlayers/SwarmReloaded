@@ -65,11 +65,11 @@ BEGIN_DATADESC( CBaseDoor )
 	DEFINE_OUTPUT( m_OnLockedUse, "OnLockedUse" ),
 
 	// Function Pointers
-	DEFINE_FUNCTION( DoorTouch ),
-	DEFINE_FUNCTION( DoorGoUp ),
-	DEFINE_FUNCTION( DoorGoDown ),
-	DEFINE_FUNCTION( DoorHitTop ),
-	DEFINE_FUNCTION( DoorHitBottom ),
+	DEFINE_FUNCTION_RAW( DoorTouch, void (__thiscall CBaseEntity::*)(CBaseEntity *) ),
+	DEFINE_FUNCTION_RAW( DoorGoUp, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( DoorGoDown, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( DoorHitTop, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( DoorHitBottom, void (__thiscall CBaseEntity::*)(void) ),
 	DEFINE_THINKFUNC( MovingSoundThink ),
 	DEFINE_THINKFUNC( CloseAreaPortalsThink ),
 
@@ -87,6 +87,7 @@ LINK_ENTITY_TO_CLASS( func_water, CBaseDoor );
 // SendTable stuff.
 IMPLEMENT_SERVERCLASS_ST(CBaseDoor, DT_BaseDoor)
 	SendPropFloat	(SENDINFO(m_flWaveHeight),		8,	SPROP_ROUNDUP,	0.0f,	8.0f),
+	SendPropBool	(SENDINFO(m_bLocked)),
 END_SEND_TABLE()
 
 #define DOOR_SENTENCEWAIT	6

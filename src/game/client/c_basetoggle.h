@@ -9,6 +9,8 @@
 #endif
 
 #include "c_baseentity.h"
+#include "iasw_client_usable_entity.h"
+#include "glow_outline_effect.h"
 
 //--------------------------------------------------------------------------------------------------------
 class C_BaseToggle: public C_BaseEntity
@@ -22,17 +24,27 @@ public:
 
 
 //--------------------------------------------------------------------------------------------------------
-class C_BaseButton: public C_BaseToggle
+class C_BaseButton: public C_BaseToggle, public IASW_Client_Usable_Entity
 {
 public:
 	DECLARE_CLASS( C_BaseButton, C_BaseToggle );
 	DECLARE_CLIENTCLASS();
 
-	C_BaseButton()
-	{
-	}
+	C_BaseButton();
 
 	virtual bool IsPotentiallyUsable( void );
+
+	// IASW_Client_Usable_Entity
+	virtual C_BaseEntity* GetEntity() { return this; }
+	virtual bool IsUsable( C_BaseEntity *pUser );
+	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Marine *pUser );
+	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) {}
+	virtual bool ShouldPaintBoxAround() { return false; }
+	virtual bool NeedsLOSCheck() { return true; }
+	virtual void OnDataChanged( DataUpdateType_t updateType );
+	void ClientThink();
+	CGlowObject m_GlowObject;
+	static int s_nUseActionIconTextureID;
 
 private:
 	bool m_usable;

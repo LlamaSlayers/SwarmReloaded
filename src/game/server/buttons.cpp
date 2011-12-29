@@ -52,12 +52,12 @@ BEGIN_DATADESC( CBaseButton )
 //  DEFINE_FIELD( m_nState, FIELD_INTEGER ),
 
 	// Function Pointers
-	DEFINE_FUNCTION( ButtonTouch ),
-	DEFINE_FUNCTION( ButtonSpark ),
-	DEFINE_FUNCTION( TriggerAndWait ),
-	DEFINE_FUNCTION( ButtonReturn ),
-	DEFINE_FUNCTION( ButtonBackHome ),
-	DEFINE_FUNCTION( ButtonUse ),
+	DEFINE_FUNCTION_RAW( ButtonTouch, void (__thiscall CBaseEntity::*)(CBaseEntity *) ),
+	DEFINE_FUNCTION_RAW( ButtonSpark, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( TriggerAndWait, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( ButtonReturn, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( ButtonBackHome, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( ButtonUse, void (__thiscall CBaseEntity::*)(CBaseEntity *, CBaseEntity *, USE_TYPE, float) ),
 
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_VOID, "Lock", InputLock ),
@@ -942,10 +942,10 @@ BEGIN_DATADESC( CMomentaryRotButton )
 	DEFINE_KEYFIELD( m_bSolidBsp, FIELD_BOOLEAN, "solidbsp" ),
 
 	// Function Pointers
-	DEFINE_FUNCTION( UseMoveDone ),
-	DEFINE_FUNCTION( ReturnMoveDone ),
-	DEFINE_FUNCTION( SetPositionMoveDone ),
-	DEFINE_FUNCTION( UpdateThink ),
+	DEFINE_FUNCTION_RAW( UseMoveDone, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( ReturnMoveDone, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( SetPositionMoveDone, void (__thiscall CBaseEntity::*)(void) ),
+	DEFINE_FUNCTION_RAW( UpdateThink, void (__thiscall CBaseEntity::*)(void) ),
 
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPosition", InputSetPosition ),

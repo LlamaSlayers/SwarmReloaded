@@ -10,8 +10,9 @@
 #pragma once
 #endif
 
+#include "iasw_server_usable_entity.h"
 
-class CBaseButton : public CBaseToggle
+class CBaseButton : public CBaseToggle, public IASW_Server_Usable_Entity
 {
 public:
 
@@ -24,6 +25,16 @@ public:
 	void RotSpawn( void );
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	int DrawDebugTextOverlays();
+
+	// IASW_Server_Usable_Entity implementation
+	virtual CBaseEntity* GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser ) { return HasSpawnFlags( 1024 ); }
+	virtual bool RequirementsMet( CBaseEntity *pUser ) { return !m_bLocked; }
+	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) {}
+	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime) {}
+	virtual void MarineStartedUsing(CASW_Marine* pMarine) {}
+	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { ButtonUse( pMarine, pMarine, USE_TOGGLE, 0 ); }
+	virtual bool NeedsLOSCheck() { return true; }
 
 protected:
 

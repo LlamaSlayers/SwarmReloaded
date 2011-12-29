@@ -55,7 +55,8 @@ bool C_ASW_Ammo_Drop::ShouldDraw()
 int C_ASW_Ammo_Drop::DrawModel( int flags, const RenderableInstance_t &instance )
 {
 	int d = BaseClass::DrawModel(flags, instance);
-
+	// Gabe, we need more lines of code!
+	// IMPLEMENT ALL THE FUNCTIONS
 	return d;
 }
 

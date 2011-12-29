@@ -12,6 +12,8 @@
 
 #include "locksounds.h"
 #include "entityoutput.h"
+#include "iasw_server_usable_entity.h"
+#include "asw_marine.h"
 
 //Since I'm here, might as well explain how these work.  Base.fgd is the file that connects
 //flags to entities.  It is full of lines with this number, a label, and a default value.
@@ -46,7 +48,7 @@ enum FuncDoorSpawnPos_t
 };
 
 
-class CBaseDoor : public CBaseToggle
+class CBaseDoor : public CBaseToggle, public IASW_Server_Usable_Entity
 {
 public:
 	DECLARE_CLASS( CBaseDoor, CBaseToggle );
@@ -58,6 +60,16 @@ public:
 	bool CreateVPhysics();
 	bool KeyValue( const char *szKeyName, const char *szValue );
 	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+
+	// IASW_Server_Usable_Entity implementation
+	virtual CBaseEntity* GetEntity() { return this; }
+	virtual bool IsUsable( CBaseEntity *pUser ) { return HasSpawnFlags( SF_DOOR_PUSE ); }
+	virtual bool RequirementsMet( CBaseEntity *pUser ) { return !m_bLocked; }
+	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) {}
+	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime) {}
+	virtual void MarineStartedUsing(CASW_Marine* pMarine) {}
+	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { Use( pMarine, pMarine, USE_TOGGLE, 0 ); }
+	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual void StartBlocked( CBaseEntity *pOther );
 	virtual void Blocked( CBaseEntity *pOther );
@@ -113,7 +125,7 @@ public:
 
 	bool	m_bForceClosed;			// If set, always close, even if we're blocked.
 	bool	m_bDoorGroup;
-	bool	m_bLocked;				// Whether the door is locked
+	CNetworkVar( bool, m_bLocked );	// Whether the door is locked
 	bool	m_bIgnoreDebris;
 	
 	FuncDoorSpawnPos_t m_eSpawnPosition;
