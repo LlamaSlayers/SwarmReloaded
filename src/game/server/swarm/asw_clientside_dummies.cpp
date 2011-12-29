@@ -1,4 +1,5 @@
 #include "cbase.h"
+#include "asw_camera_control.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -16,10 +17,9 @@ public:
 	}
 };
 
-class CASW_Camera_Control_Dummy : public CServerOnlyEntity
-{
-	DECLARE_CLASS( CASW_Camera_Control_Dummy, CServerOnlyEntity );
-};
+BEGIN_DATADESC( CASW_Camera_Control_Dummy )
+	DEFINE_KEYFIELD( m_fYaw, FIELD_FLOAT, "yaw" ),
+END_DATADESC();
 
 class CASW_Scanner_Noise_Dummy : public CServerOnlyPointEntity
 {

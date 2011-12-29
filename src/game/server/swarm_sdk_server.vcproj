@@ -4141,6 +4141,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\swarm\asw_camera_control.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_campaign_save.cpp"
 					>
 				</File>

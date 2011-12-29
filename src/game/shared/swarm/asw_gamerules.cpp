@@ -86,6 +86,7 @@
 	#include "asw_buffgrenade_projectile.h"
 	#include "asw_achievements.h"
 	#include "asw_director.h"
+	#include "asw_camera_control.h"
 #endif
 #include "game_timescale_shared.h"
 #include "asw_gamerules.h"
@@ -6811,9 +6812,7 @@ const QAngle& CAlienSwarm::GetTopDownMovementAxis( CASW_Marine *marine )
 	{
 		if ( pCamVol->CollisionProp()->IsPointInBounds( marine->GetAbsOrigin() ) )
 		{
-			char yaw[16];
-			pCamVol->GetKeyValue( "yaw", yaw, sizeof( yaw ) );
-			axis[marine->GetMarineResource()->GetProfileIndex()] = QAngle( 0, atof(yaw), 0 );
+			axis[marine->GetMarineResource()->GetProfileIndex()] = QAngle( 0, assert_cast<CASW_Camera_Control_Dummy *>( pCamVol )->m_fYaw, 0 );
 		}
 
 		return axis[marine->GetMarineResource()->GetProfileIndex()];
