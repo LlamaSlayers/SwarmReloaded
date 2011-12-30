@@ -6797,7 +6797,7 @@ int	CAlienSwarm::Damage_GetShouldNotBleed( void )
 }
 
 // movement uses this axis to decide where the marine should go from his forward/sidemove
-const QAngle& CAlienSwarm::GetTopDownMovementAxis()
+const QAngle& CAlienSwarm::GetTopDownMovementAxis( CASW_Marine *marine )
 {
 #ifdef CLIENT_DLL
 	static QAngle axis( 0, ASWInput()->ASW_GetCameraYaw(), 0 );
