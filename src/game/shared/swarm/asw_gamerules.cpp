@@ -13,6 +13,7 @@
 	#include "c_asw_campaign_save.h"
 	#include "c_asw_ammo.h"
 	#include "voice_status.h"
+	#include "asw_input.h"
 	#define CASW_Weapon C_ASW_Weapon
 	#define CAI_BaseNPC C_AI_BaseNPC
 	#define CASW_Flare_Projectile C_ASW_Flare_Projectile
