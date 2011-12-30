@@ -4826,3 +4826,9 @@
 	
 	output OnEscapeRoomStart(void) : "Fired when marine enters the escape room with all objectives (except for escape) complete.  NOTE: If you rely on this output, you must ship the .layout file along with your map."
 ]
+
+@SolidClass = asw_ceiling :
+	"Ceiling"
+[
+	vrad_brush_cast_shadows(boolean) : "Shadows" : 1 : "Set this if this brush casts lightmap shadows."
+]
