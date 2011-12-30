@@ -36,7 +36,7 @@ public:
 	virtual bool IsUsable( C_BaseEntity *pUser );
 	virtual bool GetUseAction( ASWUseAction &action, C_ASW_Marine *pUser );
 	virtual void CustomPaint( int ix, int iy, int alpha, vgui::Panel *pUseIcon ) {}
-	virtual bool ShouldPaintBoxAround() { return false; }
+	virtual bool ShouldPaintBoxAround() { return true; }
 	virtual bool NeedsLOSCheck() { return true; }
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	void ClientThink();
