@@ -65,10 +65,10 @@ public:
 	virtual CBaseEntity* GetEntity() { return this; }
 	virtual bool IsUsable( CBaseEntity *pUser ) { return HasSpawnFlags( SF_DOOR_PUSE ); }
 	virtual bool RequirementsMet( CBaseEntity *pUser ) { return !m_bLocked; }
-	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) {}
+	virtual void ActivateUseIcon( CASW_Marine* pMarine, int nHoldType ) { inputdata_t inputdata; inputdata.pActivator = inputdata.pCaller = pMarine; InputUse( inputdata ); }
 	virtual void MarineUsing(CASW_Marine* pMarine, float deltatime) {}
 	virtual void MarineStartedUsing(CASW_Marine* pMarine) {}
-	virtual void MarineStoppedUsing(CASW_Marine* pMarine) { Use( pMarine, pMarine, USE_TOGGLE, 0 ); }
+	virtual void MarineStoppedUsing(CASW_Marine* pMarine) {}
 	virtual bool NeedsLOSCheck() { return true; }
 
 	virtual void StartBlocked( CBaseEntity *pOther );

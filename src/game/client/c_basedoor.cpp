@@ -114,7 +114,7 @@ void C_BaseDoor::ClientThink()
 			bShouldGlow = true;
 	}
 
-	m_GlowObject.SetRenderFlags( false, bShouldGlow );
+	m_GlowObject.SetRenderFlags( bShouldGlow, bShouldGlow );
 
 	if ( m_GlowObject.IsRendering() )
 	{
