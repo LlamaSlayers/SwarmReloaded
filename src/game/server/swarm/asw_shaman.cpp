@@ -31,7 +31,7 @@ END_DATADESC()
 int AE_SHAMAN_SPRAY_START;
 int AE_SHAMAN_SPRAY_END;
 
-ConVar asw_shaman_health( "asw_shaman_health", "59.8", FCVAR_CHEAT );
+ConVar asw_shaman_health( "asw_shaman_health", "60", FCVAR_CHEAT );
 extern ConVar asw_debug_alien_damage;
 
 //-----------------------------------------------------------------------------
@@ -78,6 +78,9 @@ void CASW_Shaman::Spawn( void )
 void CASW_Shaman::Precache( void )
 {
 	BaseClass::Precache();
+
+	//Ch1ckensCoop: fix "late precache"
+	PrecacheModel(m_pszAlienModelName);
 
 	PrecacheScriptSound( "Shaman.Pain" );
 	PrecacheScriptSound( "Shaman.Die" );

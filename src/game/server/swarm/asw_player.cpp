@@ -51,6 +51,7 @@
 #include "asw_spawn_manager.h"
 #include "asw_campaign_info.h"
 #include "sendprop_priorities.h"
+#include "asw_client_effects.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1872,6 +1873,7 @@ void CASW_Player::SetSpectatingMarine(CASW_Marine *pMarine)
 	{
 		//Msg("Starting spectating marine %s\n", pMarine->GetEntityName());
 		m_hSpectatingMarine = pMarine;
+		ASW_Client_Effects()->PlayerSwitched(this, pMarine);
 	}
 	else
 	{
@@ -1963,6 +1965,30 @@ bool CASW_Player::CanSwitchToMarine(int num)
 	return false;
 }
 
+//Ch1ckensCoop: Reserve ONLY the first marine that the player owns.
+bool CASW_Player::IsPrimaryMarine(int index)
+{
+	if (!ASWGameResource())
+		return false;
+	int max_marines = ASWGameResource()->GetMaxMarineResources();
+
+	for (int i=0;i<max_marines;i++)
+	{		
+		CASW_Marine_Resource* pMR = ASWGameResource()->GetMarineResource(i);
+		if (pMR)
+		{
+			if ((CASW_Player*) pMR->m_Commander == this)
+			{
+				if (pMR->GetProfileIndex() == index)
+					return true;
+				else
+					return false;
+			}
+		}
+	}
+	return false;
+}
+
 // select the nth marine in the marine info list owned by this player
 void CASW_Player::SwitchMarine(int num)
 {	
@@ -2011,6 +2037,7 @@ void CASW_Player::SwitchMarine(int num)
 					SetSpectatingMarine(NULL);
 					pNewMarine->SetCommander(this);
 					pNewMarine->InhabitedBy(this);
+					ASW_Client_Effects()->PlayerSwitched(pMR->m_Commander, pNewMarine);
 
 					if ( gpGlobals->curtime > ASWGameRules()->m_fMissionStartedTime + 5.0f )
 					{

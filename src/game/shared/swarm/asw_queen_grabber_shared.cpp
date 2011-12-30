@@ -82,6 +82,7 @@ void CASW_Queen_Grabber::Spawn()
 	m_takedamage = DAMAGE_YES;
 	m_iHealth = asw_queen_grabber_health.GetInt();
 	m_iMaxHealth = m_iHealth;
+	AddEffects(EF_NOSHADOW);	//Ch1ckensCoop: No crappy shadows.
 	int iIdleSeq = LookupSequence("idle");
 	ResetSequence(iIdleSeq);
 

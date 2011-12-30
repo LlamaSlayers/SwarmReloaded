@@ -15,6 +15,8 @@
 #include "tier0/memdbgon.h"
 
 ConVar asw_debug_spawners("asw_debug_spawners", "0", FCVAR_CHEAT, "Displays debug messages for the asw_spawners");
+//Ch1ckenscoop: cargo bay railing fix
+ConVar asw_spawner_height_boost("asw_spawner_height_boost", "0", FCVAR_CHEAT, "Spawn aliens this much above spawner origin.");
 
 BEGIN_DATADESC( CASW_Base_Spawner )
 	DEFINE_KEYFIELD( m_bSpawnIfMarinesAreNear,	FIELD_BOOLEAN,	"SpawnIfMarinesAreNear" ),
@@ -127,7 +129,7 @@ bool CASW_Base_Spawner::CanSpawn( const Vector &vecHullMins, const Vector &vecHu
 				if (tr.fraction < 1.0f && tr.DidHitNonWorldEntity())
 				{
 					// some non-world entity is blocking the spawn point, so don't spawn
-					if (tr.m_pEnt)
+					if (tr.m_pEnt && tr.m_pEnt->Classify() != CLASS_ASW_DRONE)
 					{
 						if ( m_iMoveAsideCount < 6 )	// don't send 'move aside' commands more than 5 times in a row, else you'll stop blocked NPCs going to sleep.
 						{
@@ -264,7 +266,10 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 	QAngle angles = GetAbsAngles();
 	angles.x = 0.0;
 	angles.z = 0.0;	
-	pEntity->SetAbsOrigin( GetAbsOrigin() );	
+	//Ch1ckensCoop: cargo bay railing fix
+	Vector origin = GetAbsOrigin();
+	origin.z += asw_spawner_height_boost.GetFloat();
+	pEntity->SetAbsOrigin( origin );	
 	pEntity->SetAbsAngles( angles );
 
 	IASW_Spawnable_NPC* pSpawnable = dynamic_cast<IASW_Spawnable_NPC*>(pEntity);
@@ -283,7 +288,12 @@ IASW_Spawnable_NPC* CASW_Base_Spawner::SpawnAlien( const char *szAlienClassName,
 
 	if ( m_bStartBurrowed )
 	{
-		pSpawnable->SetUnburrowIdleActivity( m_UnburrowIdleActivity );
+		m_GenericUnburrowActivity = "ACT_CLIMB_OFF_RAIL_52";
+		//if (strcmp(m_UnburrowIdleActivity.ToCStr(), "ACT_CLIMB_OFF_RAIL_IDLE") != 0) //Ch1ckensCoop: fix for cargo bay aliens.
+			pSpawnable->SetUnburrowIdleActivity( m_UnburrowIdleActivity );
+		//else
+		//	pSpawnable->SetUnburrowIdleActivity( m_GenericUnburrowActivity );
+
 		pSpawnable->SetUnburrowActivity( m_UnburrowActivity );
 	}
 

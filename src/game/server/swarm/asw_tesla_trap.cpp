@@ -22,6 +22,27 @@
 #include "asw_trace_filter_shot.h"
 #include "asw_alien.h"
 #include "asw_marine.h"
+#include "asw_player_shared.h"
+#include "asw_marine_speech.h"
+#include "asw_player.h"
+#include "asw_marine_resource.h"
+#include "asw_game_resource.h"
+#include "asw_equipment_list.h"
+#include "asw_pickup_weapon.h"
+#include "asw_weapon_tesla_trap.h"
+#include "util.h"
+
+ConVar asw_tesla_trap_ammo("asw_tesla_trap_ammo", "30", FCVAR_CHEAT, "Sets the starting ammo for the tesla trap.");
+ConVar asw_tesla_trap_infinite_ammo("asw_tesla_trap_infinite_ammo", "0", FCVAR_CHEAT, "If set to 1, tesla traps won't use their ammo.");
+ConVar asw_tesla_trap_range("asw_tesla_trap_range", "200.0", FCVAR_CHEAT, "Sets the zap radius of the tesla traps.");
+ConVar asw_tesla_trap_damage("asw_tesla_trap_damage", "5.0", FCVAR_CHEAT, "Sets the damage for tesla traps.");
+ConVar asw_tesla_trap_fr("asw_tesla_trap_fr", "0.3", FCVAR_CHEAT, "Sets the firing rate for the tesla trap.", true, 0.1f, false, 10.0f);
+
+//Ch1ckensCoop: Hopefully fix tesla traps getting stuck in walls, but not sure how to yet. Try adjusting this cvar.
+ConVar asw_tesla_trap_stop_vel("asw_tesla_trap_stop_vel", "128.0", FCVAR_CHEAT, "If tesla trap is moving slower than this, stop movement and start settling.");
+
+//Ch1ckensCoop: 
+#define MAX_USERMESSAGE_RATE 0.05f;
 
 enum
 {
@@ -116,6 +137,142 @@ static const char *s_pTeslaAnimThink = "TeslaAnimThink";
 
 //---------------------------------------------------------
 //---------------------------------------------------------
+void CASW_TeslaTrap::ActivateUseIcon( CASW_Marine* pMarine, int nHoldType )
+{
+	bool m_bIsInUse = false;
+	bool m_bAssembled = true;
+
+	if (!m_bIsInUse && !m_bAssembled && nHoldType != ASW_USE_HOLD_RELEASE_FULL)
+	{
+		pMarine->StartUsing(this);
+		pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+		m_bIsInUse = true;
+	}
+	else if (m_bAssembled)
+	{
+		if ( nHoldType == ASW_USE_HOLD_START )
+		{
+			pMarine->StartUsing(this);
+			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+		}
+		else if ( nHoldType == ASW_USE_HOLD_RELEASE_FULL )
+		{
+			//pMarine->StopUsing();
+
+			if ( !m_bAlreadyTaken )
+			{			
+				bool bSuccessfulAdd = false;
+				
+				CASW_Game_Resource *pGameResource = ASWGameResource();
+				if (pGameResource)
+				{
+					for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++)
+					{
+						
+						CASW_Marine_Resource *pMarineResource = pGameResource->GetMarineResource(i);
+
+						if (pMarineResource && pMarineResource->GetMarineEntity() == pMarine && (pMarineResource->m_iWeaponsInSlots.Get(2) == g_pASWEquipmentList->GetExtraIndex("asw_weapon_tesla_trap")) )
+						{
+							CASW_Weapon_Tesla_Trap *pWeapon = (CASW_Weapon_Tesla_Trap*)pMarine->GetWeapon(2);
+							if (pWeapon)
+							{
+								pWeapon->SetClip1(pWeapon->GetClip1() + 1);
+								bSuccessfulAdd = true;
+							}
+						}
+					}
+				}
+				if (!bSuccessfulAdd)
+				{
+					CASW_Weapon *pWeapon = (CASW_Weapon*) CreateEntityByName("asw_weapon_tesla_trap");
+					pWeapon->Spawn();
+					pWeapon->SetClip1(1);
+					pMarine->TakeWeaponPickup( pWeapon );
+				}
+
+				EmitSound( "ASW_Sentry.Dismantled" );
+				UTIL_Remove( this );
+				m_bAlreadyTaken = true;
+			}
+		}
+		else if ( nHoldType == ASW_USE_RELEASE_QUICK )
+		{
+			pMarine->StopUsing();
+
+			pMarine->GetMarineSpeech()->Chatter(CHATTER_USE);
+
+			/*IGameEvent * event = gameeventmanager->CreateEvent( "sentry_rotated" );
+			if ( event )
+			{
+				CBasePlayer *pPlayer = pMarine->GetCommander();
+				event->SetInt( "userid", ( pPlayer ? pPlayer->GetUserID() : 0 ) );
+				event->SetInt( "entindex", entindex() );
+
+				gameeventmanager->FireEvent( event );
+			}*/
+
+			// tell the top piece to turn to face the same way as pMarine is facing
+			//GetSentryTop()->SetDeployYaw(pMarine->ASWEyeAngles().y);
+			//GetSentryTop()->PlayTurnSound();
+		}
+	}
+	/*static int s_InstructorServerHintEventCreate = 0;
+
+	IGameEvent *pEvent = gameeventmanager->CreateEvent( "instructor_server_hint_create", true, &s_InstructorServerHintEventCreate );
+	if ( pEvent )
+	{
+		pEvent->SetInt( "hint_target", this->entindex() );
+		pEvent->SetString( "hint_caption", "Tesla trap test!" );
+		pEvent->SetFloat( "hint_range", 5000.0f );
+		pEvent->SetInt( "hint_timeout", 1 );
+
+		gameeventmanager->FireEvent( pEvent );
+	}*/
+}
+
+bool CASW_TeslaTrap::IsUsable(CBaseEntity *pUser)
+{
+	if (pUser && pUser->GetAbsOrigin().DistTo(GetAbsOrigin()) < ASW_MARINE_USE_RADIUS)	// near enough?
+	{
+		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(pUser);
+		CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(pMarine->GetCommander());
+		CBasePlayer *pBasePlayer = dynamic_cast<CBasePlayer*>(pPlayer);
+		if (pBasePlayer && gpGlobals->curtime > m_fLastMessageTime)
+		{
+			ClientPrint(pBasePlayer, HUD_PRINTCENTER, "Hold <use> (e) to disassemble tesla coil.");
+			m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
+		}
+		return true;
+	}
+	else
+	{
+		CASW_Marine *pMarine = dynamic_cast<CASW_Marine*>(pUser);
+		CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(pMarine->GetCommander());
+		CBasePlayer *pBasePlayer = dynamic_cast<CBasePlayer*>(pPlayer);
+		if (pBasePlayer && gpGlobals->curtime > m_fLastMessageTime)
+		{
+			ClientPrint(pBasePlayer, HUD_PRINTCENTER, "");
+			m_fLastMessageTime = gpGlobals->curtime + MAX_USERMESSAGE_RATE;
+		}
+		return false;
+	}
+}
+
+void CASW_TeslaTrap::MarineUsing(CASW_Marine* pMarine, float deltatime)
+{
+
+}
+
+void CASW_TeslaTrap::MarineStartedUsing(CASW_Marine* pMarine)
+{
+
+}
+
+void CASW_TeslaTrap::MarineStoppedUsing(CASW_Marine* pMarine)
+{
+
+}
+
 void CASW_TeslaTrap::Spawn()
 {
 	Precache();
@@ -133,12 +290,14 @@ void CASW_TeslaTrap::Spawn()
 	SetFriction( 0.9f );
 	SetGravity( UTIL_ScaleForGravity( 1000 ) );
 
-	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
+	//AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
+
+	m_fLastMessageTime = gpGlobals->curtime;
+
 	AddFlag( FL_OBJECT );
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
 	SetCollisionGroup( ASW_COLLISION_GROUP_PASSABLE );
-
 
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 
@@ -165,11 +324,11 @@ void CASW_TeslaTrap::Spawn()
 	}	
 
 
-	m_flRadius = 200.0f;
-	m_flDamage = 5.0f;
-	m_iAmmo = 30;
-	m_iMaxAmmo = 30;
-	m_flChargeInterval = 0.3f;
+	m_flRadius = asw_tesla_trap_range.GetFloat();
+	m_flDamage = asw_tesla_trap_damage.GetFloat();
+	m_iAmmo = asw_tesla_trap_ammo.GetInt();
+	m_iMaxAmmo = asw_tesla_trap_ammo.GetInt();
+	m_flChargeInterval = asw_tesla_trap_fr.GetFloat();
 	m_bAssembled = false;	
 	m_bActive = false;
 	m_flNextFullChargeTime = gpGlobals->curtime + 1.0f;
@@ -495,7 +654,10 @@ void CASW_TeslaTrap::TeslaSearchThink()
 		// Don't pop up in the air, just explode if the NPC gets closer than explode radius.
 		if ( ZapTarget( m_hNearestNPC ) )
 		{
-			m_iAmmo = m_iAmmo - 1;
+			//Ch1ckensCoop: Infinite ammo by default on tesla traps.
+			if (!asw_tesla_trap_infinite_ammo.GetBool())
+				m_iAmmo = m_iAmmo - 1;
+
 			if ( m_iAmmo.Get() <= 0 )
 			{
 				SetThink( &CASW_TeslaTrap::SUB_Remove );
@@ -538,7 +700,7 @@ void CASW_TeslaTrap::TeslaTouch( CBaseEntity *pOther )
 	SetAbsVelocity( vecNewVelocity );
 
 	//Stopped?
-	if ( GetAbsVelocity().Length() < 128.0f )
+	if ( GetAbsVelocity().Length() < asw_tesla_trap_stop_vel.GetFloat() )
 	{
 		LayFlat();
 		SetAbsVelocity( vec3_origin );
@@ -577,7 +739,7 @@ void CASW_TeslaTrap::TeslaSettleThink( void )
 		//}
 	//}
 
-	if ( GetAbsVelocity().Length() < 128.0f && GetGroundEntity() )//!m_bSettled && 
+	if ( GetAbsVelocity().Length() < asw_tesla_trap_stop_vel.GetFloat() && GetGroundEntity() )//!m_bSettled && 
 	{
 		TeslaTouch( GetGroundEntity() );	
 	}

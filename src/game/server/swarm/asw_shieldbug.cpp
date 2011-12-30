@@ -916,7 +916,7 @@ void CASW_Shieldbug::SetHealthByDifficultyLevel()
 
 void CASW_Shieldbug::ASW_Ignite( float flFlameLifetime, float flSize, CBaseEntity *pAttacker, CBaseEntity *pDamagingWeapon /*= NULL */ )
 {
-	BaseClass::ASW_Ignite(MIN(flFlameLifetime, 3.0f), flSize, pAttacker, pDamagingWeapon );
+	BaseClass::ASW_Ignite(flFlameLifetime, flSize, pAttacker, pDamagingWeapon );
 }
 
 void CASW_Shieldbug::NPCThink()

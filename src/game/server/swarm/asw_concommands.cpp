@@ -1017,8 +1017,8 @@ void asw_gimme_ammo_f(void)
 				pWeapon->m_iClip2 = pWeapon->GetMaxClip2();
 
 				// give the marine a load of ammo of that type
-				pMarine->GiveAmmo(10000, pWeapon->GetPrimaryAmmoType());
-				pMarine->GiveAmmo(10000, pWeapon->GetSecondaryAmmoType());
+				pMarine->GiveAmmo(1000000, pWeapon->GetPrimaryAmmoType());		//Ch1ckensCoop: Add a few more zeros ;)
+				pMarine->GiveAmmo(1000000, pWeapon->GetSecondaryAmmoType());
 			}
 		}
 	}
@@ -1564,3 +1564,45 @@ void SpawnBuzzerAboveMe( const CCommand &args )
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
 static ConCommand asw_spawn_buzzer("asw_spawn_buzzer", SpawnBuzzerAboveMe, "Refills all marine health", FCVAR_CHEAT);
+
+void ASW_DropExtra_f()
+{
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		CASW_Marine *pMarine = pPlayer->GetMarine();
+		if (pMarine->GetFlags() & FL_FROZEN)	// don't allow this if the marine is frozen
+			return;
+		if (pPlayer->GetFlags() & FL_FROZEN)
+			return;
+		
+		CBaseCombatWeapon *pWeapon = pMarine->GetWeapon(2);
+		if (!pWeapon)
+			return;
+		pMarine->DropWeapon(2, true);
+
+		IGameEvent * event = gameeventmanager->CreateEvent( "player_dropped_weapon" );
+		if ( event )
+		{
+			event->SetInt( "userid", pPlayer->GetUserID() );
+
+			gameeventmanager->FireEvent( event );
+		}
+	}
+}
+ConCommand ASW_DropExtra( "ASW_DropExtra", ASW_DropExtra_f, "Makes your marine drop his current extra", 0 );
+
+void ASW_GetGroundEntity_f()
+{
+	CASW_Player *pPlayer = ToASW_Player(UTIL_GetCommandClient());;
+	
+	if (pPlayer && pPlayer->GetMarine())
+	{
+		CASW_Marine *pMarine = pPlayer->GetMarine();
+		CBaseEntity *pEntity = pMarine->GetGroundEntity();
+		if (pEntity)
+			Warning("Ground entity: %s\n", pEntity->GetEntityName());
+	}
+}
+ConCommand ASW_GetGroundEntity("asw_getgroundentity", ASW_GetGroundEntity_f, "Prints the marine's current ground entity.", FCVAR_NONE);

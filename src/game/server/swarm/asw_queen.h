@@ -7,6 +7,9 @@
 #include "asw_alien.h"
 #include "util_shared.h"
 
+//Ch1ckensCoop: Prevent multiple attacks per slash
+#define ASW_QUEEN_ENTITYSTORAGE_NUM 64
+
 class CASW_Queen_Divers;
 class CASW_Queen_Grabber;
 class CASW_Marine;
@@ -145,6 +148,12 @@ public:
 
 private:
 	DEFINE_CUSTOM_AI;
+
+	int StruckEntities [ASW_QUEEN_ENTITYSTORAGE_NUM];
+	//Ch1ckensCoop: Prevent queen from hitting stuff more than 1 time per swipe.
+	bool AddEntity(int entityIndex);
+	//Ch1ckensCoop: Clear entity list
+	void ClearEntities();
 };
 
 class CASW_TraceFilterOnlyQueenTargets : public CTraceFilterSimple

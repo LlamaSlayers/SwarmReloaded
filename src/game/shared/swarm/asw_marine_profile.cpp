@@ -505,7 +505,7 @@ void CASW_Marine_Profile::PrecacheSpeech(CBaseEntity *pEnt)
 				{
 					char buffer[128];
 					Q_snprintf(buffer, sizeof(buffer), "%s%d", m_Chatter[i], k);
-					Msg("Precaching speech %s\n", buffer);
+					DevMsg("Precaching speech %s\n", buffer);	//Ch1ckensCoop: Reduce console spam.
 					pEnt->PrecacheScriptSound(buffer);
 				}
 			}		

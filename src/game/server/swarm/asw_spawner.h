@@ -40,6 +40,7 @@ public:
 	void					MissionStart(); // called by gamerules when mission begins
 
 	bool					ApplyCarnageMode( float fScaler, float fInvScaler );
+	bool					RandomizeUber( float percent );
 
 	enum SpawnerState_t
 	{
@@ -57,14 +58,21 @@ public:
 	void InputStopSpawning( inputdata_t &inputdata );
 	void InputToggleSpawning( inputdata_t &inputdata );
 
-protected:
+	
 
+protected:
 	// outputs
 	COutputEvent m_OnAllSpawned;
 	COutputEvent m_OnAllSpawnedDead;
 
 	int			m_nMaxLiveAliens;			// max number of NPCs that this spawner may have out at one time.
 	int			m_nNumAliens;				// max number of NPCs that this spawner can create total
+
+	//Ch1ckensCoop: Better asw_carnage
+	int			m_nSetMaxLiveAliens;		//Max number of live aliens -- set by mapper.
+	int			m_nSetNumAliens;			//Max number of aliens -- set by mapper.
+	float		m_flSetSpawnInterval;		//Spawn interval -- set by mapper.
+
 	bool		m_bInfiniteAliens;
 	float		m_flSpawnInterval;			// time between spawns
 	float		m_flSpawnIntervalJitter;	// fractional variation applied to spawn interval each time to give it some randomness

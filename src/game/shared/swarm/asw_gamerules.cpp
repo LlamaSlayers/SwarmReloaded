@@ -86,6 +86,9 @@
 	#include "asw_buffgrenade_projectile.h"
 	#include "asw_achievements.h"
 	#include "asw_director.h"
+#include "asw_client_effects.h"	//Ch1ckensCoop: Include our client effects manager
+//Ch1ckensCoop: Include entitylist.h
+#include "entitylist.h"
 #endif
 #include "game_timescale_shared.h"
 #include "asw_gamerules.h"
@@ -195,93 +198,93 @@ ConVar asw_wanderer_override( "asw_wanderer_override", "0", FCVAR_REPLICATED, "F
 
 // ASW Weapons
 // Rifle
-ConVar	sk_plr_dmg_asw_r			( "sk_plr_dmg_asw_r","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_r			( "sk_npc_dmg_asw_r","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_r			( "sk_plr_dmg_asw_r","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_r			( "sk_npc_dmg_asw_r","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_r				( "sk_max_asw_r","0", FCVAR_REPLICATED);
 // Rifle Grenade
-ConVar	sk_plr_dmg_asw_r_g			( "sk_plr_dmg_asw_r_g","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_r_g			( "sk_npc_dmg_asw_r_g","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_r_g			( "sk_plr_dmg_asw_r_g","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_r_g			( "sk_npc_dmg_asw_r_g","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_r_g				( "sk_max_asw_r_g","0", FCVAR_REPLICATED);
 // Autogun
-ConVar	sk_plr_dmg_asw_ag			( "sk_plr_dmg_asw_ag","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ag			( "sk_npc_dmg_asw_ag","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_ag			( "sk_plr_dmg_asw_ag","0", FCVAR_REPLICATED | FCVAR_CHEAT, "Sets the damage for the Autogun." );
+ConVar	sk_npc_dmg_asw_ag			( "sk_npc_dmg_asw_ag","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_ag				( "sk_max_asw_ag","0", FCVAR_REPLICATED);
 // Shotgun
-ConVar	sk_plr_dmg_asw_sg			( "sk_plr_dmg_asw_sg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_sg			( "sk_npc_dmg_asw_sg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_sg			( "sk_plr_dmg_asw_sg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_sg			( "sk_npc_dmg_asw_sg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_sg				( "sk_max_asw_sg","0", FCVAR_REPLICATED);
 // Assault Shotgun
-ConVar	sk_plr_dmg_asw_asg			( "sk_plr_dmg_asw_asg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_asg			( "sk_npc_dmg_asw_asg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_asg			( "sk_plr_dmg_asw_asg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
+ConVar	sk_npc_dmg_asw_asg			( "sk_npc_dmg_asw_asg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_asg				( "sk_max_asw_asg","0", FCVAR_REPLICATED);
 // Flamer
-ConVar	sk_plr_dmg_asw_f			( "sk_plr_dmg_asw_f","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_f			( "sk_npc_dmg_asw_f","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_f			( "sk_plr_dmg_asw_f","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_f			( "sk_npc_dmg_asw_f","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_f				( "sk_max_asw_f","0", FCVAR_REPLICATED);
 // Pistol
-ConVar	sk_plr_dmg_asw_p			( "sk_plr_dmg_asw_p","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_p			( "sk_npc_dmg_asw_p","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_p			( "sk_plr_dmg_asw_p","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_p			( "sk_npc_dmg_asw_p","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_p				( "sk_max_asw_p","0", FCVAR_REPLICATED);
 // Mining laser
-ConVar	sk_plr_dmg_asw_ml			( "sk_plr_dmg_asw_ml","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ml			( "sk_npc_dmg_asw_ml","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_ml			( "sk_plr_dmg_asw_ml","50", FCVAR_REPLICATED | FCVAR_CHEAT, "Sets the damage for the mining laser." );
+ConVar	sk_npc_dmg_asw_ml			( "sk_npc_dmg_asw_ml","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_ml				( "sk_max_asw_ml","0", FCVAR_REPLICATED);
 // TeslaGun
-ConVar	sk_plr_dmg_asw_tg			( "sk_plr_dmg_asw_tg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_tg			( "sk_npc_dmg_asw_tg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_tg			( "sk_plr_dmg_asw_tg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_tg			( "sk_npc_dmg_asw_tg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_tg				( "sk_max_asw_tg","0", FCVAR_REPLICATED);
 // Chainsaw
-ConVar	sk_plr_dmg_asw_cs			( "sk_plr_dmg_asw_cs","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_cs			( "sk_npc_dmg_asw_cs","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_cs			( "sk_plr_dmg_asw_cs","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_cs			( "sk_npc_dmg_asw_cs","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_cs				( "sk_max_asw_cs","0", FCVAR_REPLICATED);
 // Rails
-ConVar	sk_plr_dmg_asw_rg			( "sk_plr_dmg_asw_rg","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_rg			( "sk_npc_dmg_asw_rg","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_rg			( "sk_plr_dmg_asw_rg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_rg			( "sk_npc_dmg_asw_rg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_rg				( "sk_max_asw_rg","0", FCVAR_REPLICATED);
 // Flares
-ConVar	sk_plr_dmg_asw_flares			( "sk_plr_dmg_asw_flares","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_flares			( "sk_npc_dmg_asw_flares","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_flares			( "sk_plr_dmg_asw_flares","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_flares			( "sk_npc_dmg_asw_flares","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_flares				( "sk_max_asw_flares","0", FCVAR_REPLICATED);
 // Medkit
-ConVar	sk_plr_dmg_asw_medkit			( "sk_plr_dmg_asw_medkit","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medkit			( "sk_npc_dmg_asw_medkit","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medkit			( "sk_plr_dmg_asw_medkit","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_medkit			( "sk_npc_dmg_asw_medkit","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_medkit				( "sk_max_asw_medkit","0", FCVAR_REPLICATED);
 // Med Satchel
-ConVar	sk_plr_dmg_asw_medsat			( "sk_plr_dmg_asw_medsat","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medsat			( "sk_npc_dmg_asw_medsat","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medsat			( "sk_plr_dmg_asw_medsat","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_medsat			( "sk_npc_dmg_asw_medsat","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_medsat				( "sk_max_asw_medsat","0", FCVAR_REPLICATED);
 // Med Satchel self heal secondary fire
-ConVar	sk_plr_dmg_asw_medself			( "sk_plr_dmg_asw_medself","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_medself			( "sk_npc_dmg_asw_medself","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_medself			( "sk_plr_dmg_asw_medself","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_medself			( "sk_npc_dmg_asw_medself","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_medself				( "sk_max_asw_medself","0", FCVAR_REPLICATED);
 // Med Stim
-ConVar	sk_plr_dmg_asw_stim			( "sk_plr_dmg_asw_stim","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_stim			( "sk_npc_dmg_asw_stim","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_stim			( "sk_plr_dmg_asw_stim","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_stim			( "sk_npc_dmg_asw_stim","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_stim				( "sk_max_asw_stim","0", FCVAR_REPLICATED);
 // Welder
-ConVar	sk_plr_dmg_asw_welder			( "sk_plr_dmg_asw_welder","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_welder		( "sk_npc_dmg_asw_welder","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_welder			( "sk_plr_dmg_asw_welder","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_welder		( "sk_npc_dmg_asw_welder","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_welder				( "sk_max_asw_welder","0", FCVAR_REPLICATED);
 // Extinguisher
-ConVar	sk_plr_dmg_asw_ext			( "sk_plr_dmg_asw_ext","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_ext			( "sk_npc_dmg_asw_ext","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_ext			( "sk_plr_dmg_asw_ext","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_ext			( "sk_npc_dmg_asw_ext","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_ext				( "sk_max_asw_ext","0", FCVAR_REPLICATED);
 // Mines
-ConVar	sk_plr_dmg_asw_mines			( "sk_plr_dmg_asw_mines","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_mines			( "sk_npc_dmg_asw_mines","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_mines			( "sk_plr_dmg_asw_mines","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_mines			( "sk_npc_dmg_asw_mines","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_mines				( "sk_max_asw_mines","0", FCVAR_REPLICATED);
 // PDW
-ConVar	sk_plr_dmg_asw_pdw			( "sk_plr_dmg_asw_pdw","0", FCVAR_REPLICATED );
-ConVar	sk_npc_dmg_asw_pdw			( "sk_npc_dmg_asw_pdw","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_asw_pdw			( "sk_plr_dmg_asw_pdw","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY );
+ConVar	sk_npc_dmg_asw_pdw			( "sk_npc_dmg_asw_pdw","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_pdw				( "sk_max_asw_pdw","0", FCVAR_REPLICATED);
 // Hand Grenades
-ConVar	sk_npc_dmg_asw_hg			( "sk_npc_dmg_asw_hg","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_hg			( "sk_npc_dmg_asw_hg","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_hg				( "sk_max_asw_hg","0", FCVAR_REPLICATED);
 // Grenade launcher
-ConVar	sk_npc_dmg_asw_gl			( "sk_npc_dmg_asw_gl","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_gl			( "sk_npc_dmg_asw_gl","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_gl				( "sk_max_asw_gl","0", FCVAR_REPLICATED);
 // Sniper Rifle
-ConVar	sk_npc_dmg_asw_sniper			( "sk_npc_dmg_asw_sniper","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_asw_sniper			( "sk_npc_dmg_asw_sniper","0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
 ConVar	sk_max_asw_sniper				( "sk_max_asw_sniper","0", FCVAR_REPLICATED);
 
 
@@ -720,6 +723,10 @@ CAlienSwarm::CAlienSwarm()
 	m_MapResetFilter.AddKeepEntity("scene_manager");
 	m_MapResetFilter.AddKeepEntity("event_queue_saveload_proxy");
 	m_MapResetFilter.AddKeepEntity("ai_network");
+	//Ch1ckensCoop: Keep the asw_alien_pruner entity
+	m_MapResetFilter.AddKeepEntity("asw_alien_pruner");
+	//Ch1ckensCoop: Keep the asw_health_regen entity
+	m_MapResetFilter.AddKeepEntity("asw_health_regen");
 
 	m_iMissionRestartCount = 0;
 	m_bDoneCrashShieldbugConv = false;
@@ -928,6 +935,8 @@ void CAlienSwarm::ReserveMarines()
 	if ( ASWGameResource() && ASWGameResource()->IsOfflineGame() )
 		return;
 
+	//Ch1ckensCoop: Marine reservation fix
+
 	for (int i=0;i<ASW_NUM_MARINE_PROFILES;i++)
 	{
 
@@ -935,11 +944,13 @@ void CAlienSwarm::ReserveMarines()
 		if ( ( Q_strlen( STRING( GetCampaignSave()->m_LastCommanders[i] ) ) <= 1 )
 			|| !GetCampaignSave()->IsMarineAlive(i) )
 			continue;
-		Msg("reserving marine %d for %s\n", i, STRING(GetCampaignSave()->m_LastCommanders[i]));
 
 		// someone was using it, so flag the marine as reserved
-		if ( !pGameResource->IsRosterSelected( i ) )
+		if ( !pGameResource->IsRosterSelected( i ) && GetCampaignSave()->m_LastPrimaryMarines[i] )
+		{
 			pGameResource->SetRosterSelected( i, 2 );
+			Msg("==== Reserving marine %s for %s ====\n", CASW_Marine_ProfileList().GetProfile(i)->m_ShortName, STRING(GetCampaignSave()->m_LastCommanders[i]));
+		}
 	}
 
 	m_fReserveMarinesEndTime = gpGlobals->curtime + asw_reserve_marine_time.GetFloat();
@@ -1076,6 +1087,7 @@ void CAlienSwarm::ClientDisconnected( edict_t *pClient )
 		CASW_Player *pPlayer = dynamic_cast<CASW_Player*>(CBaseEntity::Instance( pClient ) );
 		if ( pPlayer )
 		{
+			ASW_Client_Effects()->PlayerRemove(pPlayer);
 			if ( ASWGameResource() )
 			{
 				for ( int i = 0; i < ASWGameResource()->GetMaxMarineResources(); i++ )
@@ -1742,6 +1754,9 @@ void CAlienSwarm::UpdateLaunching()
 			{
 				if (ASWGameResource()->GetNumMarines(pOtherPlayer) == 0)
 					pOtherPlayer->SpectateNextMarine();
+
+				if ( !(ASW_Client_Effects() && ASW_Client_Effects()->PlayerAdd(pOtherPlayer)) )
+					Warning("Unable to add player '%s' to client effects list!\n", pOtherPlayer->GetPlayerName());
 			}
 		}	
 
@@ -1850,7 +1865,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce )
 		}
 	}
 
-	if ( GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f )
+	if ( GetGameState() == ASW_GS_INGAME && gpGlobals->curtime - ASWGameRules()->m_fMissionStartedTime > 30.0f && !asw_instant_restart.GetBool())
 	{
 		// They've been playing a bit... go to the mission fail screen instead!
 		ASWGameRules()->MissionComplete( false );
@@ -1871,7 +1886,7 @@ void CAlienSwarm::RestartMission( CASW_Player *pPlayer, bool bForce )
 
 	SetForceReady(ASW_FR_NONE);
 
-	if (!asw_instant_restart.GetBool())
+	//if (!asw_instant_restart.GetBool())
 	{
 		if (ASWGameResource())
 			ASWGameResource()->RememberLeaderID();
@@ -3082,9 +3097,24 @@ void CAlienSwarm::MissionComplete( bool bSuccess )
 	if ( m_iGameState >= ASW_GS_DEBRIEF )	// already completed the mission
 		return;
 
+	if (asw_instant_restart.GetBool() && !bSuccess) //Ch1ckensCoop: asw_instant_restart fix
+	{
+		//Ch1ckensCoop: Award experience for failed missions with asw_instant_restart enabled
+		for ( int i = 1; i <= gpGlobals->maxClients; i++ )	
+		{
+			CASW_Player* pOtherPlayer = dynamic_cast< CASW_Player* >( UTIL_PlayerByIndex( i ) );
+			if ( pOtherPlayer )
+			{
+				pOtherPlayer->AwardExperience();
+			}
+		}
+		SetForceReady( ASW_FR_INGAME_RESTART );
+		return;
+	}
+
 	StopStim();
 
-	// setting these variables will make the player's go into their debrief screens
+	// setting these variables will make the players go into their debrief screens
 	if ( bSuccess )
 	{
 		m_bMissionSuccess = true;
@@ -3785,7 +3815,19 @@ void CAlienSwarm::AlienKilled(CBaseEntity *pAlien, const CTakeDamageInfo &info)
 	{
 		pMarine = dynamic_cast< CASW_Marine* >( pFire->GetOwner() );
 	}
+	//Wikipedia's code start
+	if ( pAlien->Classify() == CLASS_ASW_PARASITE ) 
+	{
+		CASW_Parasite *pPara = dynamic_cast<CASW_Parasite*>(pAlien);
+		CASW_Marine *pInfested = dynamic_cast<CASW_Marine*>(pPara->GetParent());
+		
+		if ( pInfested ) 
+		{
+			pInfested->CureInfestation( pMarine, 0.0f );
 
+		}
+	}
+	//Wikipedia's code end
 	// send a game event for achievements to use
 	IGameEvent *pEvent = gameeventmanager->CreateEvent( "alien_died", false );
 	if ( !pEvent )
@@ -6201,14 +6243,15 @@ void CAlienSwarm::FinishForceReady()
 			{
 				SetForceReady(ASW_FR_NONE);
 
-				if ( gpGlobals->curtime - m_fMissionStartedTime > 30.0f && GetGameState() == ASW_GS_INGAME )
-				{
-					MissionComplete( false );		
-				}
+				//if ( /*gpGlobals->curtime - m_fMissionStartedTime > 30.0f && */GetGameState() == ASW_GS_INGAME )//Ch1ckensCoop: WHAT IS THIS NONSENSE? Commenting this stuff fixes the 5 second counter getting reset infinitly.
+				//{
+					//MissionComplete( false );		
+					RestartMission( NULL, true );
+				/*}
 				else
 				{
 					RestartMission( NULL, true );
-				}
+				}*/
 			}
 			break;
 		case ASW_FR_CAMPAIGN_MAP:

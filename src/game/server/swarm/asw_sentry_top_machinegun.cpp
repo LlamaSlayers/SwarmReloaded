@@ -26,10 +26,12 @@ END_SEND_TABLE()
 BEGIN_DATADESC( CASW_Sentry_Top_Machinegun )
 END_DATADESC()
 
+extern ConVar asw_sentry_mg_range;
+ConVar asw_sentry_fire_rate("asw_sentry_fire_rate", "0.08f", FCVAR_CHEAT, "Machine gun sentry fire rate in seconds.");
+ConVar asw_sentry_overfire("asw_sentry_overfire", "0.45f", FCVAR_CHEAT, "Machine gun sentries keep firing this long after killing something.");
 
-
-#define ASW_SENTRY_FIRE_RATE 0.08f		// time in seconds between each shot
-#define ASW_SENTRY_OVERFIRE 0.45f		// keep firing for this long after killing someone, because it's more badass
+//#define ASW_SENTRY_FIRE_RATE 0.08f		// time in seconds between each shot
+//#define ASW_SENTRY_OVERFIRE 0.45f		// keep firing for this long after killing someone, because it's more badass
 
 
 void CASW_Sentry_Top_Machinegun::Spawn( void )
@@ -68,7 +70,7 @@ void CASW_Sentry_Top_Machinegun::Fire()
 	else
 	{
 		diff = m_hEnemy->WorldSpaceCenter() - GetFiringPosition();
-		m_flFireHysteresisTime = gpGlobals->curtime + ASW_SENTRY_OVERFIRE ;
+		m_flFireHysteresisTime = gpGlobals->curtime + asw_sentry_overfire.GetFloat();
 	}
 
 	// if we haven't fired in a few ticks, assume this is the first bullet in a salvo,
@@ -81,7 +83,7 @@ void CASW_Sentry_Top_Machinegun::Fire()
 	do 
 	{
 		FireBulletsInfo_t info(1, GetFiringPosition(), diff, GetBulletSpread(),
-		GetRange(), m_iAmmoType);
+		m_flShootRange, m_iAmmoType);
 		info.m_pAttacker = this;
 		info.m_pAdditionalIgnoreEnt = GetSentryBase();	
 		info.m_flDamage = GetSentryDamage();
@@ -102,7 +104,7 @@ void CASW_Sentry_Top_Machinegun::Fire()
 		DispatchParticleEffect( "muzzle_sentrygun", PATTACH_POINT_FOLLOW, this, "muzzle", false, -1, &filter );
 
 		// advance by consistent interval (may cause more than one bullet to be fired per frame)
-		m_fNextFireTime += ASW_SENTRY_FIRE_RATE;
+		m_fNextFireTime += asw_sentry_fire_rate.GetFloat();
 
 		// use ammo
 		if ( pBase )

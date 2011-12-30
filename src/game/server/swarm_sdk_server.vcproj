@@ -4165,6 +4165,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ASW_Client_Effects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Client_Effects.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_clientside_dummies.cpp"
 					>
 				</File>
@@ -4485,6 +4493,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ASW_Health_Regen.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Health_Regen.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_holdout_spawner.cpp"
 					>
 				</File>
@@ -4498,6 +4514,14 @@
 				</File>
 				<File
 					RelativePath=".\swarm\asw_holoscan.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Horde_Mode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Horde_Mode.h"
 					>
 				</File>
 				<File
@@ -4841,6 +4865,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\asw_prune_aliens.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\asw_prune_aliens.h"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_queen.cpp"
 					>
 				</File>
@@ -4878,6 +4910,14 @@
 				</File>
 				<File
 					RelativePath=".\swarm\asw_ranger.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Respawn_Marine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\ASW_Respawn_Marine.h"
 					>
 				</File>
 				<File

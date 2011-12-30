@@ -100,12 +100,29 @@ ConVar asw_queen_flame_flinch_chance("asw_queen_flame_flinch_chance", "0", FCVAR
 ConVar asw_queen_force_parasite_spawn("asw_queen_force_parasite_spawn", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spawn parasites");
 ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 to force the queen to spit");
 
+ConVar asw_queen_override_health("asw_queen_override_health", "0", FCVAR_CHEAT, "If non-zero, set queen health to this no matter difficulty level.");	//Used by hordemode.
+
+//Ch1ckensCoop: Smaller queen model
+ConVar asw_queen_model_scale("asw_queen_model_scale", "1.0", FCVAR_CHEAT, "Sets the model scale for the queen.");
+//Ch1ckensCoop: Customizable parasite numbers
+ConVar asw_queen_max_parasites("asw_queen_max_parasites", "5", FCVAR_CHEAT, "Sets the maximum number of parasites that a queen can spawn.");
+//Ch1ckensCoop: Fix for queen attacking more than once per swipe. This appears to be intended behavior however, so I'll just make it a cvar.
+ConVar asw_queen_slash_multi("asw_queen_slash_multi", "0", FCVAR_CHEAT, "Set to one to have the queen attack more than once (usually 5 times) per slash.");
+
+ConVar asw_queen_damage_reductions("asw_queen_damage_reductions", "1", FCVAR_CHEAT, "Enables damage reductions for certain player weapons vs the queen.");
+
+ConVar asw_queen_force_remove("asw_queen_force_remove", "0", FCVAR_NONE, "Hack: instantly removes queen on death.");
+
 #define ASW_QUEEN_CLAW_MINS Vector(-asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat(), -asw_queen_slash_size.GetFloat() * 2.0f)
 #define ASW_QUEEN_CLAW_MAXS Vector(asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat(), asw_queen_slash_size.GetFloat() * 2.0f)
+
+//Ch1ckensCoop: WTF!? this is stupid...
+/*
 #define ASW_QUEEN_SLASH_DAMAGE asw_queen_slash_damage.GetInt()
 #define ASW_QUEEN_MELEE_RANGE asw_queen_slash_range.GetFloat()
 #define ASW_QUEEN_MELEE2_MIN_RANGE asw_queen_min_mslash.GetFloat()
 #define ASW_QUEEN_MELEE2_MAX_RANGE asw_queen_max_mslash.GetFloat()
+*/
 
 // health points at which the queen will stop to call in waves of allies
 #define QUEEN_SUMMON_WAVE_POINT_1 0.8f		// wave of drones
@@ -115,7 +132,7 @@ ConVar asw_queen_force_spit("asw_queen_force_spit", "0", FCVAR_CHEAT, "Set to 1 
 #define ASW_DIVER_ATTACK_CHANCE 0.5f
 #define ASW_DIVER_ATTACK_INTERVAL 20.0f
 #define ASW_RANGED_ATTACK_INTERVAL 30.0f
-#define ASW_MAX_QUEEN_PARASITES 5
+//#define ASW_MAX_QUEEN_PARASITES 5
 
 CASW_Queen::CASW_Queen()
 {
@@ -134,17 +151,17 @@ CASW_Queen::~CASW_Queen()
 
 void CASW_Queen::Spawn( void )
 {
-	SetHullType(HULL_LARGE_CENTERED);
+	//SetHullType(HULL_LARGE_CENTERED);
 
 	BaseClass::Spawn();
 	
-	SetHullType(HULL_LARGE_CENTERED);
+	SetHullType(HULL_LARGE);
 	//UTIL_SetSize(this, Vector(-23,-23,0), Vector(23,23,69));
 	//UTIL_SetSize(this,	Vector(-140, -140, 0), Vector(140, 140, 200) );
 #ifdef ASW_QUEEN_STATIONARY
 	UTIL_SetSize(this,	Vector(-140, -40, 0), Vector(140, 40, 200) );
 #else
-	UTIL_SetSize(this, Vector(-120,-120,0), Vector(120,120,160));
+	//UTIL_SetSize(this, Vector(-120,-120,0), Vector(120,120,160));
 #endif
 
 	SetHealthByDifficultyLevel();	
@@ -164,6 +181,11 @@ void CASW_Queen::Spawn( void )
 	m_takedamage = DAMAGE_NO;	// queen is invulnerable until she finds her first enemy
 		
 	m_hRetreatSpot = gEntList.FindEntityByClassname( NULL, "asw_queen_retreat_spot" );
+
+	//Ch1ckensCoop: Set model scale
+	float fScale = asw_queen_model_scale.GetFloat();
+	SetModelScale(fScale, 0.0f);
+	UTIL_SetSize(this, Vector((fScale * -120),(fScale * -120),(fScale * 0)), Vector((fScale * 120),(fScale * 120),(fScale * 160)));
 }
 
 void CASW_Queen::NPCInit()
@@ -336,7 +358,7 @@ int CASW_Queen::MeleeAttack1Conditions ( float flDot, float flDist )
 		fRangeBoost = 1.0f + (1.0f - flDot) * 0.25f;	// 25% range boost at fldot of 0
 	}
 
-	if ( flDist > ASW_QUEEN_MELEE_RANGE * fRangeBoost)
+	if ( flDist > asw_queen_slash_range.GetFloat() * fRangeBoost)
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}	
@@ -363,11 +385,11 @@ int CASW_Queen::MeleeAttack2Conditions ( float flDot, float flDist )
 	{	
 		fRangeBoost = 1.0f + (1.0f - flDot) * 0.25f;	// 25% range boost at fldot of 0
 	}
-	if ( flDist > ASW_QUEEN_MELEE2_MAX_RANGE * fRangeBoost)
+	if ( flDist > asw_queen_max_mslash.GetFloat() * fRangeBoost)
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}	
-	if ( flDist < ASW_QUEEN_MELEE2_MIN_RANGE)
+	if ( flDist < asw_queen_min_mslash.GetFloat())
 	{
 		return COND_TOO_CLOSE_TO_ATTACK;
 	}	
@@ -395,7 +417,7 @@ int CASW_Queen::MeleeAttack2Conditions ( float flDot, float flDist )
 //-----------------------------------------------------------------------------
 float CASW_Queen::InnateRange1MinRange( void )
 {
-	return ASW_QUEEN_MELEE_RANGE;
+	return asw_queen_slash_range.GetFloat();
 }
 
 float CASW_Queen::InnateRange1MaxRange( void )
@@ -405,7 +427,7 @@ float CASW_Queen::InnateRange1MaxRange( void )
 
 int CASW_Queen::RangeAttack1Conditions ( float flDot, float flDist )
 {
-	if ( flDist < ASW_QUEEN_MELEE_RANGE)
+	if ( flDist < asw_queen_slash_range.GetFloat())
 	{
 		return COND_TOO_CLOSE_TO_ATTACK;
 	}
@@ -945,7 +967,7 @@ void CASW_Queen::RunTask( const Task_t *pTask )
 		{
 			if (gpGlobals->curtime > m_fLayParasiteTime)
 			{
-				if (m_iCrittersAlive >= ASW_MAX_QUEEN_PARASITES || m_iCrittersSpawnedRecently > ASW_MAX_QUEEN_PARASITES)
+				if (m_iCrittersAlive >= asw_queen_max_parasites.GetFloat() || m_iCrittersSpawnedRecently > asw_queen_max_parasites.GetFloat())
 				{
 					SetChestOpen(false);
 					TaskComplete();
@@ -966,9 +988,31 @@ void CASW_Queen::RunTask( const Task_t *pTask )
 	}
 }
 
+bool CASW_Queen::AddEntity(int entityIndex)
+{
+	for (int i = 0; i < ASW_QUEEN_ENTITYSTORAGE_NUM; i++)
+	{
+		if (StruckEntities[i] == -1)
+		{
+			StruckEntities[i] = entityIndex;
+			return true;
+		}
+	}
+	Warning("Queen entity list is full!");
+	return false;	//Entity list was full
+}
+
+void CASW_Queen::ClearEntities()
+{
+	for (int i = 0; i < ASW_QUEEN_ENTITYSTORAGE_NUM; i++)
+	{
+		StruckEntities[i] = -1;
+	}
+}
+
 void CASW_Queen::SlashAttack(bool bRightClaw)
 {
-	//Msg("Queen slash attack\n");
+	DevMsg("Queen slash attack\n");
 	Vector vecClawBase;
 	Vector vecClawTip;
 	QAngle angClaw;
@@ -1012,6 +1056,7 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 	if (m_vecLastClawPos == vec3_origin)
 	{
 		m_vecLastClawPos = vecMidPoint;
+			ClearEntities();	//Ch1ckensCoop: Clear stored entities.
 		return;
 	}	
 
@@ -1025,7 +1070,19 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 	if (tr.m_pEnt)
 	{
 		CBaseEntity *pEntity = tr.m_pEnt;
-		CTakeDamageInfo	info( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel(ASW_QUEEN_SLASH_DAMAGE), DMG_SLASH );
+		
+		//Ch1ckensCoop: Prevent stuff from being hit more than once per swipe
+		if (!asw_queen_slash_multi.GetBool())
+		{
+			for (int i = 0; i < ASW_QUEEN_ENTITYSTORAGE_NUM; i++)
+			{
+				if (StruckEntities[i] == pEntity->entindex())
+					return;
+			}
+		}
+
+
+		CTakeDamageInfo	info( this, this, ASWGameRules()->ModifyAlienDamageBySkillLevel(asw_queen_slash_damage.GetInt()), DMG_SLASH );
 		info.SetDamagePosition(vecMidPoint);
 		Vector force = vecMidPoint - m_vecLastClawPos;
 		force.NormalizeInPlace();
@@ -1074,6 +1131,8 @@ void CASW_Queen::SlashAttack(bool bRightClaw)
 			NDebugOverlay::SweptBox(m_vecLastClawPos, vecMidPoint, ASW_QUEEN_CLAW_MINS, ASW_QUEEN_CLAW_MAXS, vec3_angle, 255, 255, 0, 0 ,1.0f);
 			NDebugOverlay::Line(vecMidPoint, tr.m_pEnt->GetAbsOrigin(), 255, 255, 0, false, 1.0f );
 		}
+		if (!asw_queen_slash_multi.GetBool())
+			AddEntity(pEntity->entindex());
 	}
 	else
 	{
@@ -1317,6 +1376,8 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	float damage = info.GetDamage();
 	
+	if (asw_queen_damage_reductions.GetBool())	//Ch1ckensCoop: BS. We could always just increase the health anyway...
+	{
 	// reduce all damage because the queen is TUFF!
 	damage *= 0.2f;
 
@@ -1341,7 +1402,7 @@ int CASW_Queen::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			}
 		}		
 	}
-
+	}
 	// make queen immune to buzzers
 	if (dynamic_cast<CASW_Buzzer*>(info.GetAttacker()))
 	{
@@ -1389,6 +1450,12 @@ void CASW_Queen::Event_Killed( const CTakeDamageInfo &info )
 		if (m_hDiver.Get())
 			m_hDiver.Get()->SetBurrowing(false);
 	}
+	if (asw_queen_force_remove.GetBool())	//Ch1ckensCoop: Hack Hack Hack... TALK TO JIM
+	{
+		SetThink(&CASW_Queen::SUB_Remove);
+		SetNextThink(gpGlobals->curtime + 4.0f);
+	}
+	
 }
 
 Vector CASW_Queen::GetDiverSpot()
@@ -1409,6 +1476,13 @@ bool CASW_Queen::PassesDamageFilter( const CTakeDamageInfo &info )
 
 void CASW_Queen::SetHealthByDifficultyLevel()
 {
+	if (asw_queen_override_health.GetInt() > 0)
+	{
+		SetHealth(asw_queen_override_health.GetInt());
+		SetMaxHealth(asw_queen_override_health.GetInt());
+	}
+	else
+	{
 	int health = 5000;
 	if (ASWGameRules())
 	{
@@ -1424,6 +1498,7 @@ void CASW_Queen::SetHealthByDifficultyLevel()
 	}
 	SetHealth(health);
 	SetMaxHealth(health);
+}
 }
 
 int	CASW_Queen::DrawDebugTextOverlays()
@@ -1461,18 +1536,18 @@ void CASW_Queen::DrawDebugGeometryOverlays()
 		QAngle angles( 0, 0, 0 );
 		Vector vForward, vRight, vUp;		
 
-		float flHeight = ASW_QUEEN_MELEE2_MAX_RANGE;
+		float flHeight = asw_queen_max_mslash.GetFloat();
 		angles[YAW] = i;
 		AngleVectors( angles, &vForward, &vRight, &vUp );
 		NDebugOverlay::Triangle( vBasePos+vRight*flBaseSize/2, vBasePos-vRight*flBaseSize/2, vBasePos+vForward*flHeight, 128, 0, 0, 128, false, 0.1 );
 
-		flHeight = ASW_QUEEN_MELEE2_MIN_RANGE;
+		flHeight = asw_queen_min_mslash.GetFloat();
 		angles[YAW] = i+5;
 		AngleVectors( angles, &vForward, &vRight, &vUp );
 		vBasePos.z += 1;
 		NDebugOverlay::Triangle( vBasePos+vRight*flBaseSize/2, vBasePos-vRight*flBaseSize/2, vBasePos+vForward*flHeight, 255, 0, 0, 128, false, 0.1 );
 
-		flHeight = ASW_QUEEN_MELEE_RANGE;
+		flHeight = asw_queen_slash_range.GetFloat();
 		angles[YAW] = i+10;
 		AngleVectors( angles, &vForward, &vRight, &vUp );
 		vBasePos.z += 2;

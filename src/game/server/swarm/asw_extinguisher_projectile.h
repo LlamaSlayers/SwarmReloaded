@@ -31,6 +31,7 @@ public:
 	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	void TouchedEnvFire();
 	void SetFreezeAmount( float flFreeze ) { m_flFreezeAmount = flFreeze; }
+	void SetDamageAmount (float flDamage) {m_flDamage = flDamage;}		//Ch1ckensCoop: allow freeze nades to damage stuff.
 
 	static CASW_Extinguisher_Projectile *Extinguisher_Projectile_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner );
 

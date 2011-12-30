@@ -54,6 +54,7 @@ protected:
 	// burrowing
 	string_t m_UnburrowIdleActivity;
 	string_t m_UnburrowActivity;
+	castable_string_t m_GenericUnburrowActivity;
 	bool m_bStartBurrowed;
 
 	// skill level

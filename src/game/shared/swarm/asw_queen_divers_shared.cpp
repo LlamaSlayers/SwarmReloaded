@@ -31,6 +31,7 @@ PRECACHE_WEAPON_REGISTER(asw_queen_divers);
 #endif
 
 #define ASW_QUEEN_DIVER_MODEL "models/swarm/Queen/QueenDivers.mdl"
+extern ConVar asw_queen_model_scale;	//Ch1ckensCoop: Allow scaling the queen and all of her related stuffs
 
 #ifndef CLIENT_DLL
 
@@ -80,6 +81,8 @@ void CASW_Queen_Divers::Spawn()
 
 	SetThink( &CASW_Queen_Divers::AnimThink );
 	SetNextThink( gpGlobals->curtime + 0.1f);
+
+	SetModelScale(asw_queen_model_scale.GetFloat(), 0.0f);	//Ch1ckensCoop: Allow scaling the queen and all of her related stuffs
 }
 
 void CASW_Queen_Divers::Precache()
@@ -99,7 +102,9 @@ CASW_Queen_Divers *CASW_Queen_Divers::Create_Queen_Divers( CASW_Queen *pQueen )
 	pDivers->SetOwnerEntity( pQueen );
 	pDivers->m_hQueen = pQueen;
 	Vector vecQueen = pQueen->GetAbsOrigin();
-	vecQueen.z -= 20.0f;	// put the divers slightly lower so they don't poke up from the ground when curling
+	//Ch1ckensCoop: Don't need this when the queen is smaller.
+	//vecQueen.z -= 20.0f;	// put the divers slightly lower so they don't poke up from the ground when curling
+	//vecQueen.x += 50.0f;
 	pDivers->SetAbsOrigin(vecQueen);
 	pDivers->SetAbsAngles(pQueen->GetAbsAngles());
 	pDivers->SetAbsVelocity( vec3_origin );

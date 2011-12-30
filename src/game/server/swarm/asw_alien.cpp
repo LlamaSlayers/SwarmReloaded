@@ -30,6 +30,10 @@
 #include "asw_tesla_trap.h"
 #include "sendprop_priorities.h"
 #include "asw_spawn_manager.h"
+#include "asw_parasite.h"
+#include "asw_player.h"
+#include "asw_game_resource.h"
+#include "asw_marine_resource.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -70,6 +74,9 @@ ConVar asw_springcol_core( "asw_springcol_core", "0.33", FCVAR_CHEAT, "Fraction 
 ConVar asw_springcol_radius( "asw_springcol_radius", "50.0", FCVAR_CHEAT, "Radius of the alien's pushaway cylinder" );
 ConVar asw_springcol_force_scale( "asw_springcol_force_scale", "3.0", FCVAR_CHEAT, "Multiplier for each individual push force" );
 ConVar asw_springcol_debug( "asw_springcol_debug", "0", FCVAR_CHEAT, "Display the direction of the pushaway vector. Set to entity index or -1 to show all." );
+
+ConVar asw_alien_longrange("asw_alien_longrange", "0", FCVAR_CHEAT, "If non-zero, allow swarm to see this far.");
+ConVar asw_alien_network_cull("asw_alien_network_cull", "1100", FCVAR_NONE, "If non-zero, don't send aliens farther than this distance from marines.");
 
 float CASW_Alien::sm_flLastHurlTime = 0;
 
@@ -199,6 +206,58 @@ CASW_Alien::CASW_Alien( void ) :
 	meleeAttack2.Init( 0.0f, 64.0f, 0.7f, false );
 	rangeAttack1.Init( 64.0f, 786.0f, 0.5f, false );
 	rangeAttack2.Init( 64.0f, 512.0f, 0.5f, false );
+}
+
+struct marineInfo		//Ch1ckensCoop: Network culling
+{
+public:
+	edict_t *playerEdict;
+	float fl_MarineDist;
+};
+
+int	CASW_Alien::ShouldTransmit( const CCheckTransmitInfo *pInfo )
+{
+	if(asw_alien_network_cull.GetInt() > 0)
+	{
+		CASW_Game_Resource *pGameResource = ASWGameResource();
+		marineInfo marineEdicts [ASW_MAX_MARINE_RESOURCES];
+		CASW_Marine_Resource *pMarineResource = NULL;
+		CASW_Marine *pMarine = NULL;
+		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++)
+		{
+			pMarineResource = pGameResource->GetMarineResource(i);
+			if (pMarineResource)
+			{
+				pMarine = pMarineResource->GetMarineEntity();
+				if (pMarine && pMarine->GetHealth() > 0)
+				{
+					marineEdicts[i].playerEdict = pMarineResource->GetCommander()->edict();
+					marineEdicts[i].fl_MarineDist = pMarine->GetAbsOrigin().DistTo(this->GetAbsOrigin());
+				}
+				else
+				{
+					return FL_EDICT_ALWAYS;
+				}
+			}
+		}
+
+		marineInfo marineEdict;
+
+		for (int i = 0; i < ASW_MAX_MARINE_RESOURCES; i++)
+		{
+			if (marineEdicts[i].playerEdict == pInfo->m_pClientEnt)
+				marineEdict = marineEdicts[i];
+		}
+
+		Assert(marineEdict.fl_MarineDist);		//If this get's triggered, something's majorly screwed up.
+
+		if (marineEdict.fl_MarineDist <= asw_alien_network_cull.GetFloat())
+			return FL_EDICT_ALWAYS;
+		else
+			return FL_EDICT_DONTSEND;
+	}
+
+	return FL_EDICT_ALWAYS;
 }
 
 CASW_Alien::~CASW_Alien()
@@ -546,6 +605,13 @@ void CASW_Alien::NPCInit()
 		SetDistLook( 1536.0f );
 		m_flDistTooFar = 2000.0f;
 	}
+
+	if (asw_alien_longrange.GetInt() > 0)
+	{
+		SetDistSwarmSense( asw_alien_longrange.GetFloat() );
+		SetDistLook( asw_alien_longrange.GetFloat() );
+		m_flDistTooFar = asw_alien_longrange.GetFloat();
+	}
 	SetCollisionBounds( GetHullMins(), GetHullMaxs() );
 
 	CASW_GameStats.Event_AlienSpawned( this );
@@ -561,7 +627,8 @@ void CASW_Alien::CallBehaviorThink()
 		pCurrent->BehaviorThink();
 	}
 }
-
+ConVar asw_alien_prune_distance("asw_alien_prune_distance", "3000", FCVAR_CHEAT, "Distance from nearest marine at which aliens are removed.");
+ConVar asw_alien_prune("asw_alien_prune", "1", FCVAR_NONE, "Set to 1 to enable alien pruning.");
 void CASW_Alien::NPCThink( void )
 {
 	BaseClass::NPCThink();
@@ -595,6 +662,25 @@ void CASW_Alien::NPCThink( void )
 		UpdateRangedAttack();
 
 	UpdateThawRate();
+
+	//Ch1ckensCoop: Alien pruning
+	if (asw_alien_prune.GetBool() && strcmp(this->GetClassname(), "asw_egg") != 0 && strcmp(this->GetClassname(), "asw_shieldbug") != 0)
+	{
+
+	CBaseEntity* pEntity = NULL;
+	while ((pEntity = gEntList.FindEntityInSphere( pEntity, this->GetAbsOrigin(), asw_alien_prune_distance.GetFloat() )) != NULL)
+	{
+		if(strcmp(pEntity->GetClassname(), "asw_marine") == 0)
+		{
+			SetTagState(ASW_TAG_SAFE);
+			break;
+		}
+	}
+	if (GetTagState() != ASW_TAG_SAFE)
+		UTIL_Remove(this);
+
+	SetTagState(ASW_TAG_REMOVE);
+	}
 
 	m_flLastThinkTime = gpGlobals->curtime;
 }
@@ -3106,7 +3192,7 @@ void CASW_Alien::LookupBurrowActivities()
 		m_UnburrowActivity = (Activity) LookupActivity( STRING( m_iszUnburrowActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow activity %s", STRING( m_iszUnburrowActivityName ) );
+			DevMsg( "Unknown unburrow activity %s\n", STRING( m_iszUnburrowActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );
@@ -3124,7 +3210,7 @@ void CASW_Alien::LookupBurrowActivities()
 		m_UnburrowIdleActivity = (Activity) LookupActivity( STRING( m_iszUnburrowIdleActivityName ) );
 		if ( m_UnburrowActivity == ACT_INVALID )
 		{
-			Warning( "Unknown unburrow idle activity %s", STRING( m_iszUnburrowIdleActivityName ) );
+			DevMsg( "Unknown unburrow idle activity %s", STRING( m_iszUnburrowIdleActivityName ) );
 			if ( m_hSpawner.Get() )
 			{
 				Warning( "  Spawner is: %d %s at %f %f %f\n", m_hSpawner->entindex(), m_hSpawner->GetDebugName(), VectorExpand( m_hSpawner->GetAbsOrigin() ) );

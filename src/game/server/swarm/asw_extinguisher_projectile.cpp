@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "soundent.h"
 #include "te_effect_dispatch.h"
+#include "asw_weapon.h"	//Ch1ckensCoop: Need to use GetMarine(); for the icer damage (see ProjectileTouch();)
 #include "IEffects.h"
 #include "EntityFlame.h"
 #include "asw_fire.h"
@@ -18,6 +19,8 @@ extern ConVar sk_npc_dmg_asw_f;
 extern ConVar asw_flamer_debug;
 
 #define PELLET_MODEL "models/swarm/Shotgun/ShotgunPellet.mdl"
+
+ConVar asw_fireex_freeze_amount("asw_fireex_freeze_amount", "0.4", FCVAR_CHEAT, "Sets the alien freezing amount of the flamer and fire extinguisher.");
 
 LINK_ENTITY_TO_CLASS( asw_extinguisher_projectile, CASW_Extinguisher_Projectile );
 
@@ -56,6 +59,8 @@ void CASW_Extinguisher_Projectile::Spawn( void )
 	SetSolid( SOLID_BBOX );
 	SetGravity( 0.05f );
 	SetCollisionGroup( ASW_COLLISION_GROUP_EXTINGUISHER_PELLETS );
+
+	SetFreezeAmount(asw_fireex_freeze_amount.GetFloat());	//Ch1ckensCoop: Able to freeze aliens with flamer secondary fire and fire extinguisher.
 
 	SetTouch( &CASW_Extinguisher_Projectile::ProjectileTouch );
 
@@ -112,6 +117,13 @@ void CASW_Extinguisher_Projectile::ProjectileTouch( CBaseEntity *pOther )
 
 				pAnim->Extinguish();
 			}
+		}
+		//Ch1ckensCoop: Allow freeze nades to damage stuff
+		if (pOther && m_flDamage)
+		{
+			CTakeDamageInfo info(this, GetFirer(), m_flDamage, DMG_GENERIC);
+			//info.SetDamage(m_flDamage);
+			pOther->TakeDamage(info);
 		}
 
 		//FireSystem_ExtinguishInRadius( GetAbsOrigin(), 100, 100 );
