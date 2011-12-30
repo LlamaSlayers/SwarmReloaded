@@ -4141,10 +4141,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\swarm\asw_camera_control.h"
-					>
-				</File>
-				<File
 					RelativePath=".\swarm\asw_campaign_save.cpp"
 					>
 				</File>
@@ -4514,14 +4510,6 @@
 				</File>
 				<File
 					RelativePath=".\swarm\asw_holoscan.h"
-					>
-				</File>
-				<File
-					RelativePath=".\ASW_Horde_Mode.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\ASW_Horde_Mode.h"
 					>
 				</File>
 				<File

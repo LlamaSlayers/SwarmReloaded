@@ -13,7 +13,6 @@
 #include "asw_objective_escape.h"
 #include "asw_director_control.h"
 #include "asw_mission_manager.h"
-#include "asw_horde_mode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -326,10 +325,6 @@ void CASW_Director::OnHordeFinishedSpawning()
 		Msg("Horde finishes spawning\n");
 	}
 	m_bHordeInProgress = false;
-
-	//Ch1ckensCoop: Let horde mode know that the horde has finished spawning.
-	if (ASWHordeMode())
-		ASWHordeMode()->HordeFinishedSpawning();
 }
 
 void CASW_Director::UpdateSpawningState()
