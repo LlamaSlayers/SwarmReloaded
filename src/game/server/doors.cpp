@@ -562,7 +562,7 @@ void CBaseDoor::DoorTouch( CBaseEntity *pOther )
 
 	// Ignore touches by anything but players.
 #ifdef SWARM_DLL
-	if ( !ASW_Marine::AsMarine(pOther) )
+	if ( !CASW_Marine::AsMarine(pOther) )
 #else
 	if ( !pOther->IsPlayer() )
 #endif
