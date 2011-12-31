@@ -24,6 +24,7 @@ END_SEND_TABLE()
 */
 
 BEGIN_DATADESC( CASW_Sentry_Top_Machinegun )
+	DEFINE_KEYFIELD( m_flSpeedScale, FIELD_FLOAT, "SpeedScale" ),
 END_DATADESC()
 
 extern ConVar asw_sentry_mg_range;
@@ -104,7 +105,7 @@ void CASW_Sentry_Top_Machinegun::Fire()
 		DispatchParticleEffect( "muzzle_sentrygun", PATTACH_POINT_FOLLOW, this, "muzzle", false, -1, &filter );
 
 		// advance by consistent interval (may cause more than one bullet to be fired per frame)
-		m_fNextFireTime += asw_sentry_fire_rate.GetFloat();
+		m_fNextFireTime += asw_sentry_fire_rate.GetFloat() / m_flSpeedScale;
 
 		// use ammo
 		if ( pBase )

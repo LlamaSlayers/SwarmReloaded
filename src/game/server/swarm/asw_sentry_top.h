@@ -92,6 +92,11 @@ public:
 		ASW_SENTRY_RANGE= 525, // just the default
 	};
 
+	// Enable/disable
+	bool m_bEnabled;
+	virtual void InputEnable( inputdata_t &inputdata );
+	virtual void InputDisable( inputdata_t &inputdata );
+
 protected:
 	// helper function used by FindEnemy
 	Vector GetEnemyVelocity( CBaseEntity *pEnemy = NULL );

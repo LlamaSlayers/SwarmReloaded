@@ -54,7 +54,11 @@ BEGIN_DATADESC( CASW_Sentry_Top )
 	DEFINE_FIELD( m_fTurnRate, FIELD_FLOAT ),
 	DEFINE_KEYFIELD( m_flShootRange, FIELD_FLOAT, "TurretRange" ),
 	DEFINE_FIELD( m_bHasHysteresis, FIELD_BOOLEAN ),	
-	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),	
+	DEFINE_FIELD( m_bLowAmmo, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+
+	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 END_DATADESC()
 
 
@@ -67,6 +71,7 @@ CASW_Sentry_Top::CASW_Sentry_Top()
 	m_iBaseTurnRate = ASW_SENTRY_TURNRATE;
 	m_iSentryAngle = ASW_SENTRY_ANGLE;
 	m_bLowAmmo = false;
+	m_bEnabled = true;
 }
 #undef ASW_SENTRY_RANGE 
 
@@ -452,7 +457,8 @@ void CASW_Sentry_Top::CheckFiring()
 
 		if ( (flDist < ASW_SENTRY_FIRE_ANGLE_THRESHOLD) || ( m_bHasHysteresis && !m_hEnemy ) )
 		{
-			Fire();
+			if ( m_bEnabled )
+				Fire();
 		}	
 	}
 }

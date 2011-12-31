@@ -19,6 +19,8 @@ public:
 	// Classification
 	virtual Class_T Classify( void ) { return (Class_T) CLASS_ASW_SENTRY_GUN; }
 
+	float m_flSpeedScale;
+
 protected:
 	float m_flFireHysteresisTime; // some turrets have a mechanism to continue shooting without an enemy
 	 
