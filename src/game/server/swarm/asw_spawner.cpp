@@ -61,6 +61,8 @@ BEGIN_DATADESC( CASW_Spawner )
 	DEFINE_KEYFIELD( m_flSpawnIntervalJitter,	FIELD_FLOAT,	"SpawnIntervalJitter" ),
 	DEFINE_KEYFIELD( m_AlienClassNum,			FIELD_INTEGER,	"AlienClass" ),
 	DEFINE_KEYFIELD( m_SpawnerState,			FIELD_INTEGER,	"SpawnerState" ),
+	DEFINE_KEYFIELD( m_flHealthScale,			FIELD_FLOAT, "HealthScale" ),
+	DEFINE_KEYFIELD( m_flSpeedScale,			FIELD_FLOAT, "SpeedScale" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"SpawnOneAlien",	InputSpawnAlien ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartSpawning",	InputStartSpawning ),
@@ -137,6 +139,10 @@ IASW_Spawnable_NPC* CASW_Spawner::SpawnAlien( const char *szAlienClassName, cons
 	if ( pSpawnable )
 	{
 		m_nCurrentLiveAliens++;
+		pSpawnable->m_flSpeedScale = m_flSpeedScale;
+		CBaseEntity *pSpawnableEntity = dynamic_cast<CBaseEntity *>( pSpawnable );
+		pSpawnableEntity->SetMaxHealth( (int) ( pSpawnableEntity->GetMaxHealth() * m_flHealthScale ) );
+		pSpawnableEntity->SetHealth( pSpawnableEntity->GetMaxHealth() );
 
 		if (!m_bInfiniteAliens)
 		{

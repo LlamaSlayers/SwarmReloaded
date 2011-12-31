@@ -149,7 +149,9 @@ BEGIN_DATADESC( CASW_Alien )
 	DEFINE_FIELD( m_vecLastPushAwayOrigin, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecLastPush, FIELD_VECTOR ),
 	DEFINE_FIELD( m_bPushed, FIELD_BOOLEAN ),
+
 	DEFINE_FIELD( m_bHoldoutAlien, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_flSpeedScale, FIELD_FLOAT ),
 END_DATADESC()
 
 IMPLEMENT_AUTO_LIST( IAlienAutoList );
@@ -2635,7 +2637,7 @@ float CASW_Alien::GetIdealSpeed() const
 		}
 	}
 
-	return BaseClass::GetIdealSpeed();
+	return BaseClass::GetIdealSpeed() * m_flSpeedScale;
 }
 
 void CASW_Alien::DropMoney( const CTakeDamageInfo &info )

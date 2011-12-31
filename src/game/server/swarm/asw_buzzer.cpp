@@ -2591,15 +2591,15 @@ float CASW_Buzzer::ManhackMaxSpeed( void )
 			|| m_flElectroStunSlowMoveTime > gpGlobals->curtime )
 	{
 		// Slower in water!
-		return ASW_BUZZER_MAX_SPEED * 0.1f;
+		return ASW_BUZZER_MAX_SPEED * 0.1f * m_flSpeedScale;
 	}
 
 	if( m_fHurtSlowMoveTime > gpGlobals->curtime )
 	{
-		return ASW_BUZZER_MAX_SPEED * 0.5f;
+		return ASW_BUZZER_MAX_SPEED * 0.5f * m_flSpeedScale;
 	}
 
-	return ASW_BUZZER_MAX_SPEED;
+	return ASW_BUZZER_MAX_SPEED * m_flSpeedScale;
 }
 
 

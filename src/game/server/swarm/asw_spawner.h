@@ -80,6 +80,9 @@ protected:
 	int			m_AlienClassNum;			// integer from choice in Hammer, which sets the classname on Spawn
 	string_t	m_AlienClassName;			// classname of the NPC(s) that will be created.
 
+	float		m_flHealthScale;
+	float		m_flSpeedScale;
+
 	int			m_nCurrentLiveAliens;		// current number of live aliens
 
 	SpawnerState_t m_SpawnerState;
