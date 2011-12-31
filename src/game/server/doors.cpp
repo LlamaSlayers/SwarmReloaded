@@ -12,8 +12,7 @@
 #include "ndebugoverlay.h"
 #include "engine/IEngineSound.h"
 #include "physics_npc_solver.h"
-
-
+#include "asw_marine.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -562,7 +561,11 @@ void CBaseDoor::DoorTouch( CBaseEntity *pOther )
 		ChainTouch( pOther );
 
 	// Ignore touches by anything but players.
+#ifdef SWARM_DLL
+	if ( !ASW_Marine::AsMarine(pOther) )
+#else
 	if ( !pOther->IsPlayer() )
+#endif
 	{
 		return;
 	}
