@@ -4348,24 +4348,25 @@
 	]
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin, EnableDisable) studioprop("models/sentry_gun/machinegun_top.mdl") = asw_sentry_top_machinegun
 [
-	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+	TurretRange(float) : "Turret Range" : 525 : "Maximum distance that it will pick targets."
+	SpeedScale(float) : "Speed Scale" : 1 : "Scale the speed of the sentry firing"
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/grenade_top.mdl") = asw_sentry_top_cannon
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin, EnableDisable) studioprop("models/sentry_gun/grenade_top.mdl") = asw_sentry_top_cannon
 [
-	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+	TurretRange(float) : "Turret Range" : 525 : "Maximum distance that it will pick targets."
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/freeze_top.mdl") = asw_sentry_top_icer
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin, EnableDisable) studioprop("models/sentry_gun/freeze_top.mdl") = asw_sentry_top_icer
 [
-	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+	TurretRange(float) : "Turret Range" : 525 : "Maximum distance that it will pick targets."
 ]
 
-@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin) studioprop("models/sentry_gun/flame_top.mdl") = asw_sentry_top_flamer
+@PointClass base(Targetname, Parentname, Angles, Studiomodel, Origin, EnableDisable) studioprop("models/sentry_gun/flame_top.mdl") = asw_sentry_top_flamer
 [
-	TurretRange(float) : "Turret Range" : "525" : "Maximum distance that it will pick targets."
+	TurretRange(float) : "Turret Range" : 525 : "Maximum distance that it will pick targets."
 ]
 
 @PointClass sphere() iconsprite("editor/env_shake.vmt") base(Targetname, Parentname) = asw_env_shake : 
