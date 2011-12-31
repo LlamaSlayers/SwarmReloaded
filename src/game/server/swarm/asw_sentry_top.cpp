@@ -513,3 +513,13 @@ void CASW_Sentry_Top::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr,
 	WRITE_FLOAT( tr.endpos.z );
 	MessageEnd();
 }
+
+void CASW_Sentry_Top::InputEnable( inputdata_t &inputdata )
+{
+	m_bEnabled = true;
+}
+
+void CASW_Sentry_Top::InputDisable( inputdata_t &inputdata )
+{
+	m_bEnabled = false;
+}
