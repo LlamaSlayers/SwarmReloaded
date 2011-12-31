@@ -490,8 +490,8 @@ void CASW_Broadcast_Camera::RestoreAllPlayerViews()
 
 		if ( pPlayer )
 		{
-			pPlayer->SetViewEntity( pPlayer );
-			pPlayer->EnableControl(true);
+			pPlayer->SetViewEntity( NULL );
+			pPlayer->EnableControl( true );
 		}
 	}
 }
