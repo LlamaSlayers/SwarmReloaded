@@ -10,6 +10,7 @@ public:
 	DECLARE_CLASS( C_ASW_Ceiling, C_BaseEntity );
 
 	C_ASW_Ceiling() {}
+	virtual ~C_ASW_Ceiling();
 
 	bool Initialize();
 	void Spawn();
@@ -23,5 +24,7 @@ protected:
 	static const char *ParseEntity( const char *pEntData );
 	static void ParseAllEntities(const char *pMapData);
 };
+
+extern CUtlVector<C_ASW_Ceiling *> g_ASWCeilings;
 
 #endif // _INCLUDED_C_ASW_CEILING_H

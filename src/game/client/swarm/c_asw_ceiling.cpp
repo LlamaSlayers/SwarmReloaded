@@ -6,6 +6,11 @@
 
 CUtlVector<C_ASW_Ceiling *> g_ASWCeilings;
 
+C_ASW_Ceiling::~C_ASW_Ceiling()
+{
+	g_ASWCeilings.FindAndRemove( this );
+}
+
 C_ASW_Ceiling *C_ASW_Ceiling::CreateNew( bool bForce )
 {
 	return new C_ASW_Ceiling();
@@ -17,11 +22,11 @@ void C_ASW_Ceiling::Spawn()
 	SetModel( STRING( GetModelName() ) ); // set size and link into world
 	AddFlag( FL_WORLDBRUSH );
 
-	g_ASWCeilings.AddToTail(this);
+	g_ASWCeilings.AddToTail( this );
 
 	BaseClass::Spawn();
 
-	m_takedamage = DAMAGE_NO;	
+	m_takedamage = DAMAGE_NO;
 }
 
 bool C_ASW_Ceiling::Initialize()
