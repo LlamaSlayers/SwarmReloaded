@@ -28,11 +28,17 @@ public:
 	bool m_bHordesStartEnabled;
 	bool m_bDirectorControlsSpawners;
 
+	COutputEvent m_OnMissionStartWithOnslaught;
+	COutputEvent m_OnSpawnWanderer;
+	COutputEvent m_OnSpawnHorde;
+	COutputEvent m_OnSpawnSpecial;
+
 private:
 	void InputEnableHordes( inputdata_t &inputdata );
 	void InputDisableHordes( inputdata_t &inputdata );
 	void InputEnableWanderers( inputdata_t &inputdata );
 	void InputDisableWanderers( inputdata_t &inputdata );
+	void InputForcePanicEvent( inputdata_t &inputdata );
 	void InputStartFinale( inputdata_t &inputdata );
 
 	COutputEvent m_OnEscapeRoomStart;

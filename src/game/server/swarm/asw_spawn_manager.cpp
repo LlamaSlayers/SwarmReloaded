@@ -17,6 +17,7 @@
 #include "datacache/imdlcache.h"
 #include "ai_link.h"
 #include "asw_alien.h"
+#include "asw_director_control.h"
 //Ch1ckensCoop: Inlude entitylist.h
 #include "entitylist.h"
 
@@ -35,7 +36,7 @@ ConVar asw_horde_max_distance("asw_horde_max_distance", "1500", FCVAR_CHEAT, "Ma
 ConVar asw_max_alien_batch("asw_max_alien_batch", "10", FCVAR_CHEAT, "Max number of aliens spawned in a horde batch" );
 ConVar asw_batch_interval("asw_batch_interval", "5", FCVAR_CHEAT, "Time between successive batches spawning in the same spot");
 ConVar asw_candidate_interval("asw_candidate_interval", "1.0", FCVAR_CHEAT, "Interval between updating candidate spawning nodes");
-ConVar asw_horde_class( "asw_horde_class", "asw_drone", FCVAR_CHEAT, "Alien class used when spawning hordes" );
+ConVar asw_horde_class( "asw_horde_class", "asw_drone_jumper", FCVAR_CHEAT, "Alien class used when spawning hordes" );
 
 ConVar asw_horde_enforce_range("asw_horde_enforce_range", "1", FCVAR_CHEAT, "ALWAYS check if marines are within the min and max distances.");
 ConVar asw_horde_buffer("asw_horde_buffer", "25", FCVAR_CHEAT, "Buffer to prevent aliens from spawning partly inside walls.");
@@ -280,7 +281,12 @@ void CASW_Spawn_Manager::Update()
 	if ( m_iAliensToSpawn > 0 )
 	{
 		if ( SpawnAlientAtRandomNode() )
+		{
 			m_iAliensToSpawn--;
+			CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
+			if ( pControl )
+				pControl->m_OnSpawnWanderer.FireOutput( pControl, pControl );
+		}
 	}
 }
 
@@ -313,7 +319,7 @@ bool CASW_Spawn_Manager::SpawnAlientAtRandomNode()
 	if ( candidateNodes.Count() <= 0 )
 		return false;
 
-	const char *szAlienClass = "asw_drone";
+	const char *szAlienClass = "asw_drone_jumper";
 	Vector vecMins, vecMaxs;
 	GetAlienBounds( szAlienClass, vecMins, vecMaxs );
 
@@ -901,6 +907,9 @@ bool CASW_Spawn_Manager::SpawnRandomShieldbug()
 		if ( pSpawnable )
 		{
 			pSpawnable->SetAlienOrders(AOT_SpreadThenHibernate, vec3_origin, NULL);
+			CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
+			if ( pControl )
+				pControl->m_OnSpawnSpecial.FireOutput( pControl, pControl );
 		}
 		aAreas.PurgeAndDeleteElements();
 		return true;
@@ -984,6 +993,9 @@ bool CASW_Spawn_Manager::SpawnRandomParasitePack( int nParasites )
 			}
 		}
 		aAreas.PurgeAndDeleteElements();
+		CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
+		if ( pControl )
+			pControl->m_OnSpawnSpecial.FireOutput( pControl, pControl );
 		return true;
 	}
 
@@ -1183,7 +1195,7 @@ void asw_alien_batch_f( const CCommand& args )
 	
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand asw_alien_batch("asw_alien_batch", asw_alien_batch_f, "Creates a batch of aliens at the cursor", FCVAR_GAMEDLL | FCVAR_CHEAT);
+static ConCommand asw_alien_batch("asw_alien_batch", asw_alien_batch_f, "Creates a batch of parasites at the cursor", FCVAR_GAMEDLL | FCVAR_CHEAT);
 
 
 void asw_alien_horde_f( const CCommand& args )

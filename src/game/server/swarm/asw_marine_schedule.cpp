@@ -358,9 +358,16 @@ int CASW_Marine::SelectSchedule()
 		float dist = GetAbsOrigin().DistTo(m_vecMoveToOrderPos);
 		if ( dist > 30 )
 		{
-			return SCHED_ASW_MOVE_TO_ORDER_POS;			
+			return SCHED_ASW_MOVE_TO_ORDER_POS;
 		}
 		SetASWOrders(ASW_ORDER_HOLD_POSITION, m_fHoldingYaw);
+	}
+
+	// === attacking biomass ===
+	if ( EngageNewAlienGooTarget() )
+	{
+		SetASWOrders( ASW_ORDER_MOVE_TO, -1, &GetAlienGooTarget()->GetAbsOrigin() );
+		return SCHED_ASW_MOVE_TO_ORDER_POS;
 	}
 
 	// === holding position ===	
@@ -1932,6 +1939,8 @@ CBaseEntity *CASW_Marine::BestAlienGooTarget()
 		CASW_Alien_Goo *pAlienGoo = g_AlienGoo[iAlienGoo];
 		if ( !pAlienGoo )
 			continue;
+		if ( pAlienGoo->m_bOnFire.Get() )
+			continue;
 	
 		float flDistSqr = GetAbsOrigin().DistToSqr( pAlienGoo->GetAbsOrigin() );
 		if( flDistSqr < flClosestDistSqr && FInViewCone( pAlienGoo->GetAbsOrigin() ) && !pAlienGoo->m_bHasGrubs )	// grubs = decorative, not a target
@@ -2844,6 +2853,9 @@ bool CASW_Marine::CheckAutoWeaponSwitch()
 {
 	CASW_Weapon *pWeapon = GetActiveASWWeapon();
 	if (pWeapon && pWeapon->IsOffensiveWeapon())
+		return true;
+
+	if (pWeapon && pWeapon->Classify() == CLASS_ASW_HEAL_GUN && pWeapon->IsFiring() )
 		return true;
 
 	// marine doesn't auto switch weapons the first two times he's hurt

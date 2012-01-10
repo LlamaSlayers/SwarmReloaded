@@ -4149,6 +4149,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\swarm\asw_ceiling.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\swarm\asw_client.cpp"
 					>
 				</File>

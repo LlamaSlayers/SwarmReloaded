@@ -73,6 +73,10 @@ void CASW_Director::UpdateIntensity()
 	float fDeltaTime = m_IntensityUpdateTimer.GetElapsedTime();
 	m_IntensityUpdateTimer.Start();
 
+	// Quadruple the amount of spawning allowed during panic events
+	if ( m_flPanic > 0 )
+		fDeltaTime *= 4;
+
 	CASW_Game_Resource *pGameResource = ASWGameResource();
 	if ( !pGameResource )
 		return;

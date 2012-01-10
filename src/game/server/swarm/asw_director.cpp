@@ -66,6 +66,7 @@ bool CASW_Director::Init()
 	m_bFiredEscapeRoom = false;
 	
 	m_bHordeInProgress = false;
+	m_flPanic = -1;
 	m_bFinale = false;
 
 	// take horde/wanderer settings from director control
@@ -132,14 +133,31 @@ void CASW_Director::FrameUpdatePostEntityThink()
 	if ( !asw_spawning_enabled.GetBool() )
 		return;
 
+	UpdatePanicEvent();
+
 	UpdateHorde();
 
 	UpdateSpawningState();
 
-	bool bWanderersEnabled = m_bWanderersEnabled || asw_wanderer_override.GetBool();
+	bool bWanderersEnabled = m_bWanderersEnabled || asw_wanderer_override.GetBool() || ( m_flPanic > 0 );
 	if ( bWanderersEnabled )
 	{
 		UpdateWanderers();
+	}
+}
+
+void CASW_Director::UpdatePanicEvent()
+{
+	if ( m_flPanic <= gpGlobals->curtime )
+	{
+		m_flPanic = -1;
+		return;
+	}
+
+	float flQuickStart = RandomFloat( 2.0f, 5.0f );
+	if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
+	{
+		m_HordeTimer.Start( flQuickStart );
 	}
 }
 
@@ -267,7 +285,7 @@ void CASW_Director::UpdateHorde()
 		engine->Con_NPrintf( 16, "Awake drones: %d\n", ASWSpawnManager()->GetAwakeDrones() );
 	}
 
-	bool bHordesEnabled = m_bHordesEnabled || asw_horde_override.GetBool();
+	bool bHordesEnabled = m_bHordesEnabled || asw_horde_override.GetBool() || ( m_flPanic > 0 );
 	if ( !bHordesEnabled || !ASWSpawnManager() )
 		return;
 
@@ -324,6 +342,9 @@ void CASW_Director::OnHordeFinishedSpawning()
 	{
 		Msg("Horde finishes spawning\n");
 	}
+	CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
+	if ( pControl )
+		pControl->m_OnSpawnHorde.FireOutput( pControl, pControl );
 	m_bHordeInProgress = false;
 }
 
@@ -364,7 +385,7 @@ void CASW_Director::UpdateSpawningState()
 				}
 			}
 		}
-		else if ( m_SustainTimer.IsElapsed() )		// TODO: Should check their intensity meters are below a certain threshold?  Should probably also not wait if they run too far ahead
+		else if ( m_flPanic > 0 || m_SustainTimer.IsElapsed() )		// TODO: Should check their intensity meters are below a certain threshold?  Should probably also not wait if they run too far ahead
 		{
 			m_bSpawningAliens = true;
 			m_bReachedIntensityPeak = false;
@@ -416,6 +437,16 @@ void CASW_Director::UpdateWanderers()
 		return;
 	}
 
+	if ( !m_SpecialSpawnTimer.HasStarted() )
+		m_SpecialSpawnTimer.Start( 120.0f / ASWGameRules()->GetSkillLevel() );
+	if ( m_SpecialSpawnTimer.IsElapsed() )
+	{
+		if ( RandomInt( 0, 1 ) )
+			ASWSpawnManager()->SpawnRandomParasitePack( RandomInt( ASWGameRules()->GetSkillLevel(), ASWGameRules()->GetSkillLevel() * 2 ) );
+		else
+			ASWSpawnManager()->SpawnRandomShieldbug();
+	}
+
 	// spawn an alien every so often
 	if ( !m_AlienSpawnTimer.HasStarted() || m_AlienSpawnTimer.IsElapsed() )
 	{
@@ -458,29 +489,13 @@ bool CASW_Director::CanSpawnAlien( CASW_Spawner *pSpawner )
 
 void CASW_Director::OnMarineStartedHack( CASW_Marine *pMarine, CBaseEntity *pComputer )
 {
-	CASW_Game_Resource *pGameResource = ASWGameResource();
-	if ( !pGameResource )
-		return;
+	StartPanicEvent();
+}
 
-	//Msg( " Marine started hack!\n" );
-
-	// reset intensity so we can have a big fight without relaxing immediately
-	for ( int i=0;i<pGameResource->GetMaxMarineResources();i++ )
-	{
-		CASW_Marine_Resource *pMR = pGameResource->GetMarineResource(i);
-		if ( !pMR )
-			continue;
-
-		pMR->GetIntensity()->Reset();
-	}
-
-	float flQuickStart = RandomFloat( 2.0f, 5.0f );
-	if ( m_HordeTimer.GetRemainingTime() > flQuickStart )
-	{
-		m_HordeTimer.Start( flQuickStart );
-	}
-
-	// TODO: Instead have some kind of 'is in a big fight' state?
+void CASW_Director::StartPanicEvent( float flDuration/*=10.0f*/ )
+{
+	m_flPanic = MAX( m_flPanic, gpGlobals->curtime + flDuration );
+	DevMsg("Starting panic event\n");
 }
 
 void CASW_Director::StartFinale()
@@ -524,6 +539,12 @@ void CASW_Director::UpdateMarineInsideEscapeRoom( CASW_Marine *pMarine )
 
 void CASW_Director::OnMissionStarted()
 {
+	if ( ASWGameRules()->IsOnslaught() )
+	{
+		CASW_Director_Control* pControl = static_cast<CASW_Director_Control*>( gEntList.FindEntityByClassname( NULL, "asw_director_control" ) );
+		if ( pControl )
+			pControl->m_OnMissionStartWithOnslaught.FireOutput( pControl, pControl );
+	}
 	// if we have wanders turned on, spawn a couple of encounters
 	if ( asw_wanderer_override.GetBool() && ASWGameRules() )
 	{

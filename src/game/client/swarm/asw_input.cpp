@@ -212,7 +212,10 @@ bool MarineControllingTurret()
 
 bool ValidOrderingSurface(const trace_t &tr)
 {
-	if (!Q_strcmp("TOOLS/TOOLSNOLIGHT", tr.surface.name))
+	if ( !Q_strncmp( "TOOLS/", tr.surface.name, 6 ) )
+		return false;
+
+	if ( tr.m_pEnt && FClassnameIs( tr.m_pEnt, "asw_ceiling" ) )
 		return false;
 
 	// check marine hull can fit in this spot
@@ -258,68 +261,77 @@ bool HUDTraceToWorld(float screenx, float screeny, Vector &HitLocation, bool bUs
 	TraceDirection = projected;
 	TraceDirection.NormalizeInPlace();
 	Vector traceStart = vCameraLocation;
-	traceEnd = traceStart + TraceDirection * 3000;
+	IHandleEntity *pEntity = NULL;
 
-	if (bUseMarineHull)
+	for ( int i = 0; i < 10; i++ )
 	{
-		// do a trace into the world to see what we've pointing directly at		
-		Ray_t ray2;
-		trace_t tr;
-		ray2.Init( traceStart, traceEnd, ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
-		UTIL_TraceRay( ray2, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
-		if ( tr.fraction >= 1.0f )
-			return false;
+		traceEnd = traceStart + TraceDirection * 3000;
 
-		bool bValidSurface = ValidOrderingSurface(tr);
-
-		HitLocation = tr.endpos;
-
-		if (!bValidSurface)
+		if (bUseMarineHull)
 		{
-			// trace down from above the hitlocation with a marine hull
-			Ray_t ray;
-			trace_t pm;
-			ray.Init( HitLocation + Vector(0, 0, 40), HitLocation, ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
-			UTIL_TraceRay( ray, MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &pm );
-			if ( pm.startsolid || pm.fraction < 0.01f )
-			{
+			// do a trace into the world to see what we've pointing directly at		
+			Ray_t ray2;
+			trace_t tr;
+			ray2.Init( traceStart, traceEnd, ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
+			UTIL_TraceRay( ray2, MASK_SOLID_BRUSHONLY, pEntity, COLLISION_GROUP_NONE, &tr );
+			if ( tr.fraction >= 1.0f )
 				return false;
-			}
-			HitLocation = pm.endpos;
-			//Msg("Using raised pos\n");
-		}
-		else
-		{
-			// trace down in-case this spot is in the air
-			Ray_t ray;
-			trace_t pm;
-			ray.Init( HitLocation, HitLocation - Vector(0, 0, 2200), ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
-			UTIL_TraceRay( ray, MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &pm );		
-			if (pm.startsolid)
+
+			bool bValidSurface = ValidOrderingSurface(tr);
+
+			HitLocation = tr.endpos;
+
+			if (!bValidSurface)
 			{
-				return false;
+				pEntity = tr.m_pEnt;
+				traceStart = tr.endpos;
+				/*
+				// trace down from above the hitlocation with a marine hull
+				Ray_t ray;
+				trace_t pm;
+				ray.Init( HitLocation + Vector(0, 0, 40), HitLocation, ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
+				UTIL_TraceRay( ray, MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &pm );
+				if ( pm.startsolid || pm.fraction < 0.01f )
+				{
+					return false;
+				}
+				HitLocation = pm.endpos;
+				//Msg("Using raised pos\n");
+				*/
 			}
 			else
 			{
-				HitLocation = pm.endpos;
+				// trace down in-case this spot is in the air
+				Ray_t ray;
+				trace_t pm;
+				ray.Init( HitLocation, HitLocation - Vector(0, 0, 2200), ASW_MARINE_HULL_MINS, ASW_MARINE_HULL_MAXS );
+				UTIL_TraceRay( ray, MASK_PLAYERSOLID, NULL, COLLISION_GROUP_PLAYER_MOVEMENT, &pm );		
+				if (pm.startsolid)
+				{
+					return false;
+				}
+				else
+				{
+					HitLocation = pm.endpos;
+				}
 			}
 		}
-	}
-	else
-	{
-		// do a trace into the world to see what we've pointing directly at
-		trace_t tr;
-		UTIL_TraceLine(traceStart, traceEnd, MASK_SOLID_BRUSHONLY, pPlayer, COLLISION_GROUP_NONE, &tr);
-		if ( tr.fraction >= 1.0f )
-			return false;
-		// if we hit tools no light texture, retrace through it
+		else
+		{
+			// do a trace into the world to see what we've pointing directly at
+			trace_t tr;
+			UTIL_TraceLine(traceStart, traceEnd, MASK_SOLID_BRUSHONLY, pPlayer, COLLISION_GROUP_NONE, &tr);
+			if ( tr.fraction >= 1.0f )
+				return false;
+			// if we hit tools no light texture, retrace through it
 
-		bool bValidSurface = ValidOrderingSurface(tr);
-		//int iRetrace = 4;
+			bool bValidSurface = ValidOrderingSurface(tr);
+			//int iRetrace = 4;
 
-		HitLocation = vCameraLocation + tr.fraction * 3000 * TraceDirection;
+			HitLocation = vCameraLocation + tr.fraction * 3000 * TraceDirection;
 
-		return bValidSurface;
+			return bValidSurface;
+		}
 	}
 
 	// Note: disabled this code that repeatedly retraces through bad surfaces

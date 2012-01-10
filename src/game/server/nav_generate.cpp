@@ -3372,9 +3372,11 @@ void CNavMesh::BeginGeneration( bool incremental )
 		gameeventmanager->FireEvent( event );
 	}
 
-
+#ifdef SWARM_DLL
+	engine->ServerCommand("asw_clean_house\n");
+#else
 	engine->ServerCommand( "bot_kick\n" );
-
+#endif
 
 	// Right now, incrementally-generated areas won't connect to existing areas automatically.
 	// Since this means hand-editing will be necessary, don't do a full analyze.

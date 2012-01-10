@@ -78,11 +78,14 @@ public:
 
 	bool CanSpawnAlien( CASW_Spawner *pSpawner );			// if director is controlling alien spawns, then mapper set spawners ask permission before spawning	
 
+	void StartPanicEvent( float flDuration = 10.0f );
 	void StartFinale();
 	void SetHordesEnabled( bool bHordes ) { m_bHordesEnabled = bHordes; }
 	void SetWanderersEnabled( bool bWanderers ) { m_bWanderersEnabled = bWanderers; }
+	void SetSpecialEnabled( bool bSpecial ) { m_bSpecialEnabled = bSpecial; }
 
 protected:
+	void UpdatePanicEvent();
 	void UpdateHorde();
 	void UpdateIntensity();
 	void UpdateSpawningState();
@@ -100,10 +103,13 @@ private:
 	CountdownTimer m_SustainTimer;
 	float m_fTimeBetweenAliens;
 	CountdownTimer m_AlienSpawnTimer;
+	CountdownTimer m_SpecialSpawnTimer;
 
 	// marines are about to escape, throw everything at them
 	bool m_bFinale;
+	float m_flPanic;
 	bool m_bWanderersEnabled;
+	bool m_bSpecialEnabled;
 	bool m_bHordesEnabled;
 	bool m_bFiredEscapeRoom;
 	bool m_bDirectorControlsSpawners;

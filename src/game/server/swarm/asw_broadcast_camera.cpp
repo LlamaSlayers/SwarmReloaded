@@ -479,6 +479,9 @@ void CASW_Broadcast_Camera::UpdateAllPlayers()
 			pPlayer->SetViewEntity( this );
 		}
 	}
+	CReliableBroadcastRecipientFilter filter;
+	UserMessageBegin( filter, "ASWBroadcastCamStart" );		
+	MessageEnd();
 }
 
 // puts player views back to normal
@@ -494,4 +497,7 @@ void CASW_Broadcast_Camera::RestoreAllPlayerViews()
 			pPlayer->EnableControl( true );
 		}
 	}
+	CReliableBroadcastRecipientFilter filter;
+	UserMessageBegin( filter, "ASWBroadcastCamEnd" );		
+	MessageEnd();
 }

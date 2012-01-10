@@ -22,7 +22,11 @@ BEGIN_DATADESC( CASW_Director_Control )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"EnableWanderers",	InputEnableWanderers ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableWanderers",	InputDisableWanderers ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"StartFinale",	InputStartFinale ),
+	DEFINE_OUTPUT( m_OnMissionStartWithOnslaught, "OnMissionStartWithOnslaught"),
 	DEFINE_OUTPUT( m_OnEscapeRoomStart, "OnEscapeRoomStart"),
+	DEFINE_OUTPUT( m_OnSpawnWanderer, "OnSpawnWanderer"),
+	DEFINE_OUTPUT( m_OnSpawnHorde, "OnSpawnHorde"),
+	DEFINE_OUTPUT( m_OnSpawnSpecial, "OnSpawnSpecial"),
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -80,6 +84,17 @@ void CASW_Director_Control::InputDisableWanderers( inputdata_t &inputdata )
 		return;
 
 	ASWDirector()->SetWanderersEnabled( false );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CASW_Director_Control::InputForcePanicEvent( inputdata_t &inputdata )
+{
+	if ( !ASWDirector() )
+		return;
+
+	ASWDirector()->StartPanicEvent();
 }
 
 //-----------------------------------------------------------------------------

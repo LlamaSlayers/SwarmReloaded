@@ -7,6 +7,7 @@
 #include "asw_input.h"
 #include "missionchooser/iasw_random_missions.h"
 #include "holdout_resupply_frame.h"
+#include "c_user_message_register.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -181,9 +182,13 @@ float CASWInput::ASW_GetCameraYaw( const float *pfDeathCamInterp /*= NULL*/ )
 		{
 			m_fCurrentBlendCamYaw = ASW_ClampYaw( asw_cam_marine_yaw_rate.GetFloat(), m_fCurrentBlendCamYaw, asw_cam_marine_yaw.GetFloat(), MIN( 0.2f, gpGlobals->frametime ) );
 		}
-		char buf[32];
-		Q_snprintf( buf, sizeof( buf ), "cl_aswcamerayaw %f\n", m_fCurrentBlendCamYaw );
-		engine->ServerCmd( buf, false );
+		if ( m_flLastYawSend + 0.2f < gpGlobals->curtime || m_flLastYawSend > gpGlobals->curtime )
+		{
+			m_flLastYawSend = gpGlobals->curtime;
+			char buf[32];
+			Q_snprintf( buf, sizeof( buf ), "cl_aswcamerayaw %f\n", m_fCurrentBlendCamYaw );
+			engine->ServerCmd( buf, false );
+		}
 	}
 
 	return m_fCurrentBlendCamYaw;
@@ -558,3 +563,15 @@ void ASWDemoCamera_f()
 	engine->ClientCmd("asw_controls 0");
 }
 ConCommand asw_demo_camera("asw_demo_camera", ASWDemoCamera_f);
+
+void __MsgFunc_ASWBroadcastCamStart( bf_read &msg )
+{
+	ASWInput()->CAM_ToFirstPerson();
+}
+USER_MESSAGE_REGISTER( ASWBroadcastCamStart );
+
+void __MsgFunc_ASWBroadcastCamEnd( bf_read &msg )
+{
+	ASWInput()->CAM_ToThirdPerson();
+}
+USER_MESSAGE_REGISTER( ASWBroadcastCamEnd );

@@ -31,7 +31,7 @@ END_DATADESC()
 int AE_SHAMAN_SPRAY_START;
 int AE_SHAMAN_SPRAY_END;
 
-ConVar asw_shaman_health( "asw_shaman_health", "60", FCVAR_CHEAT );
+ConVar asw_shaman_health( "asw_shaman_health", "120", FCVAR_CHEAT );
 extern ConVar asw_debug_alien_damage;
 
 //-----------------------------------------------------------------------------
@@ -213,10 +213,8 @@ bool CASW_Shaman::CreateBehaviors()
 	AddBehavior( &m_ScuttleBehavior );
 	m_ScuttleBehavior.Init();
 
-	/*
 	AddBehavior( &m_FearBehavior );
 	m_FearBehavior.Init();
-	*/
 
 	AddBehavior( &m_IdleBehavior );
 	m_IdleBehavior.Init();

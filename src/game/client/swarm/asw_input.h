@@ -88,6 +88,7 @@ public:
 	// asw_in_camera.cpp:
 	float m_fCurrentBlendCamYaw;
 	float m_fCurrentBlendCamDist;
+	float m_flLastYawSend;
 	virtual void CAM_Think( void );
 	virtual void CAM_ToThirdPerson( void );
 	virtual	int CAM_IsThirdPerson( int nSlot = -1 );

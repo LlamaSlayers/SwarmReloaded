@@ -2905,14 +2905,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\swarm\c_asw_ceiling.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\swarm\c_asw_ceiling.h"
-					>
-				</File>
-				<File
 					RelativePath=".\swarm\c_asw_client_corpse.cpp"
 					>
 				</File>
